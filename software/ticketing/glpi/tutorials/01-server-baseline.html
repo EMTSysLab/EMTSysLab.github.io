@@ -27,7 +27,7 @@
     <h1>GLPI Secure Deployment Series</h1>
     <p>Part 1 — Server Baseline & OS Validation</p>
 
-    <select id="language-switcher">
+    <select id="language-switcher" onchange="switchLanguage(this.value)">
         <option value="en" selected>English</option>
         <option value="es">Español</option>
     </select>
@@ -83,6 +83,16 @@ Rocky Linux 10 for a hardened GLPI deployment.
 <footer>
     &copy; 2026 EMTSysLab. All Rights Reserved.
 </footer>
+
+<script>
+function switchLanguage(lang) {
+    if(lang === 'es'){
+        window.location.href = '../../../../es/software/ticketing/glpi/tutorials/01-server-baseline.html';
+    } else {
+        window.location.href = '01-server-baseline.html';
+    }
+}
+</script>
 
 </body>
 </html>

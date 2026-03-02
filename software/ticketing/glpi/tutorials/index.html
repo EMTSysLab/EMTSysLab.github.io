@@ -27,7 +27,7 @@
     <h1>GLPI Secure Deployment Series</h1>
     <p>Production-Ready Deployment on Rocky Linux 10</p>
 
-    <select id="language-switcher">
+    <select id="language-switcher" onchange="switchLanguage(this.value)">
         <option value="en" selected>English</option>
         <option value="es">Español</option>
     </select>
@@ -70,6 +70,16 @@
 <footer>
     &copy; 2026 EMTSysLab. All Rights Reserved.
 </footer>
+
+<script>
+function switchLanguage(lang) {
+    if(lang === 'es'){
+        window.location.href = '../../../../es/software/ticketing/glpi/tutorials/index.html';
+    } else {
+        window.location.href = 'index.html';
+    }
+}
+</script>
 
 </body>
 </html>

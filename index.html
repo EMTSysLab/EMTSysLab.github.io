@@ -29,7 +29,7 @@
     <h1>EMTSysLab</h1>
     <p>Learn, Automate, and Master IT Systems</p>
 
-    <select id="language-switcher">
+    <select id="language-switcher" onchange="switchLanguage(this.value)">
         <option value="en" selected>English</option>
         <option value="es">Español</option>
     </select>
@@ -64,6 +64,16 @@
 <footer>
     &copy; 2026 EMTSysLab. All Rights Reserved.
 </footer>
+
+<script>
+function switchLanguage(lang) {
+    if(lang === 'es'){
+        window.location.href = 'es/index.html';
+    } else {
+        window.location.href = 'index.html';
+    }
+}
+</script>
 
 </body>
 </html>
