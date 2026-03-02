@@ -17,7 +17,7 @@
         section { padding:2rem 1rem; max-width:1000px; margin:0 auto; }
         section h2 { color:#0d47a1; margin-bottom:1rem; }
         .grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(250px,1fr)); gap:1rem; }
-        .card { background:white; padding:1rem; border-radius:5px; box-shadow:0 2px 5px rgba(0,0,0,0.1); display:none; }
+        .card { background:white; padding:1rem; border-radius:5px; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
         .card a { text-decoration:none; color:#0d47a1; font-weight:bold; }
         footer { text-align:center; padding:1rem; background:#0d47a1; color:white; margin-top:2rem; }
     </style>
@@ -25,11 +25,10 @@
 <body>
 
 <header>
-    <img src="../assets/images/logo-emtsyslab.png" alt="EMTSysLab Logo" style="height:60px; margin-bottom:0.5rem;">
+    <img src="assets/images/logo-emtsyslab.png" alt="EMTSysLab Logo" style="height:60px; margin-bottom:0.5rem;">
     <h1>EMTSysLab</h1>
     <p>Learn, Automate, and Master IT Systems</p>
     
-    <!-- Language selector -->
     <select id="language-switcher" onchange="switchLanguage(this.value)">
         <option value="en" selected>English</option>
         <option value="es">Español</option>
@@ -45,40 +44,16 @@
 
 <section>
     <h2>Welcome to EMTSysLab</h2>
-    <p>EMTSysLab is your personal lab for learning Linux, GLPI (Ticketing), Kubernetes, and IT automation. Explore tutorials, scripts, labs, and guides designed for sysadmins and IT enthusiasts.</p>
-</section>
-
-<section>
-    <h2>🚀 Featured Technical Series</h2>
-    
-    <div style="background:white; padding:1.5rem; border-radius:5px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
-        
-        <h3 style="color:#0d47a1;">GLPI Secure Deployment Series</h3>
-        
-        <p>
-        A production-ready and security-focused deployment guide for GLPI on Rocky Linux 10.
-        This series documents a hardened installation approach for enterprise environments.
-        </p>
-
-        <a href="software/ticketing/glpi/tutorials/index.html"
-           style="display:inline-block; margin-top:10px;
-                  padding:0.5rem 1rem;
-                  background:#0d47a1;
-                  color:white;
-                  text-decoration:none;
-                  border-radius:5px;
-                  font-weight:bold;">
-           Read the Series →
-        </a>
-
-    </div>
+    <p>
+        EMTSysLab is your technical platform for Linux administration, Kubernetes labs,
+        GLPI deployment, and IT automation. Content is released progressively as part of
+        structured technical series.
+    </p>
 </section>
 
 <section id="featured-sections">
-    <h2>Featured Sections</h2>
-    <div class="grid">
-        <!-- Cards will appear dynamically as content is added -->
-    </div>
+    <h2>Featured Content</h2>
+    <div class="grid"></div>
 </section>
 
 <footer>
@@ -90,16 +65,16 @@ function switchLanguage(lang) {
     if(lang === 'es'){
         window.location.href = 'es/index.html';
     } else {
-        window.location.href = '/index.html';
+        window.location.href = 'index.html';
     }
 }
 
-// Sections to show dynamically – add only when content exists
 const sections = [
-    // {title: "Linux Tutorials", description: "Step-by-step guides, scripts, and labs to master Linux administration.", link: "linux/"},
-    // {title: "Kubernetes Labs", description: "Hands-on labs and automation scripts to deploy and manage clusters.", link: "kubernetes/"},
-    // {title: "Software Tools", description: "IT tools, plugins, and automation resources.", link: "software/"},
-    // {title: "GLPI (Ticketing)", description: "Automation scripts, plugins, and deployment guides for GLPI.", link: "software/ticketing/glpi/"},
+    {
+        title: "GLPI Secure Deployment Series",
+        description: "Production-ready and security-focused GLPI deployment on Rocky Linux 10.",
+        link: "software/ticketing/glpi/tutorials/index.html"
+    }
 ];
 
 const grid = document.querySelector("#featured-sections .grid");
@@ -107,7 +82,6 @@ const grid = document.querySelector("#featured-sections .grid");
 sections.forEach(section => {
     const card = document.createElement("div");
     card.className = "card";
-    card.style.display = "block"; // only show if content exists
     card.innerHTML = `<h3>${section.title}</h3>
                       <p>${section.description}</p>
                       <a href="${section.link}">Explore →</a>`;
