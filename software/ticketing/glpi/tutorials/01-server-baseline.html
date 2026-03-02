@@ -2,35 +2,51 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="description" content="GLPI Secure Deployment Series - Part 1. Server baseline and OS validation on Rocky Linux 10 for production environments.">
+    <meta name="description" content="GLPI Secure Deployment Series - Part 1. Server baseline and OS validation on Rocky Linux 10.">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GLPI Secure Deployment - Part 1 | EMTSysLab</title>
     <link rel="stylesheet" href="../../../../assets/css/style.css">
+    <style>
+        body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; color:#333; }
+        header { background:#0d47a1; color:white; padding:2rem 1rem; text-align:center; position:relative; }
+        nav { display:flex; justify-content:center; gap:1rem; margin-top:1rem; flex-wrap: wrap; }
+        nav a { color:white; text-decoration:none; font-weight:bold; padding:0.5rem 1rem; background:#1976d2; border-radius:5px; transition:0.3s; }
+        nav a:hover { background:#1565c0; }
+        #language-switcher { position:absolute; top:1rem; right:1rem; padding:0.3rem; border-radius:5px; border:none; font-weight:bold; }
+        section { padding:2rem 1rem; max-width:1000px; margin:0 auto; }
+        section h2 { color:#0d47a1; margin-bottom:1rem; }
+        pre { background:#1e1e1e; color:#f5f5f5; padding:1rem; border-radius:5px; overflow:auto; }
+        footer { text-align:center; padding:1rem; background:#0d47a1; color:white; margin-top:2rem; }
+        .back-link { margin-top:2rem; display:inline-block; font-weight:bold; }
+    </style>
 </head>
 <body>
 
 <header>
-    <img src="../../../../assets/images/logo-emtsyslab.png" alt="EMTSysLab Logo" style="height:60px;">
+    <img src="../../../../assets/images/logo-emtsyslab.png" alt="EMTSysLab Logo" style="height:60px; margin-bottom:0.5rem;">
     <h1>GLPI Secure Deployment Series</h1>
     <p>Part 1 — Server Baseline & OS Validation</p>
-</header>
 
-<main style="max-width:900px;margin:auto;padding:20px;line-height:1.6;">
+    <select id="language-switcher">
+        <option value="en" selected>English</option>
+        <option value="es">Español</option>
+    </select>
+
+    <nav>
+        <a href="../../../../linux/">Linux</a>
+        <a href="../../../../kubernetes/">Kubernetes</a>
+        <a href="../../../../software/">Software</a>
+        <a href="../../../../newsletter/">Newsletter</a>
+    </nav>
+</header>
 
 <section>
 <h2>📘 Introduction</h2>
 <p>
-This article begins a professional technical series focused on deploying GLPI
-in a production-ready, security-hardened environment.
-</p>
-
-<p>
-In this first chapter, we validate the operating system baseline and prepare
-the server for a secure deployment on <strong>Rocky Linux 10</strong>.
+This chapter validates the operating system baseline and prepares
+Rocky Linux 10 for a hardened GLPI deployment.
 </p>
 </section>
-
-<hr>
 
 <section>
 <h2>🖥️ 1. Operating System Validation</h2>
@@ -41,99 +57,31 @@ the server for a secure deployment on <strong>Rocky Linux 10</strong>.
 <h3>Check Kernel Version</h3>
 <pre><code>uname -r</code></pre>
 
-<p>
-Ensure the system is fully updated before continuing:
-</p>
-
 <pre><code>dnf update -y</code></pre>
-
 </section>
-
-<hr>
 
 <section>
 <h2>🌐 2. Hostname Configuration</h2>
 
-<h3>Set Persistent Hostname</h3>
 <pre><code>hostnamectl set-hostname glpi-server</code></pre>
 
-<h3>Verify Configuration</h3>
 <pre><code>hostnamectl status</code></pre>
-
-<p>
-A properly defined hostname ensures clean service integration and avoids
-unexpected issues during SSL certificate generation and monitoring integration.
-</p>
-
 </section>
-
-<hr>
 
 <section>
 <h2>🔐 3. Basic Security Validation</h2>
 
-<h3>Check SELinux Status</h3>
 <pre><code>getenforce</code></pre>
 
-<p>
-For production environments, SELinux should be set to <strong>Enforcing</strong>.
-</p>
-
-<h3>Verify Active Services</h3>
 <pre><code>systemctl list-units --type=service --state=running</code></pre>
-
-<p>
-Disable unnecessary services to reduce attack surface.
-</p>
-
 </section>
-
-<hr>
 
 <section>
-<h2>📊 What Comes Next?</h2>
-
-<p>
-In the next chapter we will cover:
-</p>
-
-<ul>
-<li>Advanced LVM Design</li>
-<li>Filesystem Segmentation</li>
-<li>Security Mount Options (nodev, nosuid, noexec)</li>
-<li>Temporary Filesystem Hardening</li>
-</ul>
-
-<p><strong>Status:</strong> In Progress 🚧</p>
-
+<a href="index.html" class="back-link">← Back to Series Overview</a>
 </section>
 
-<hr>
-
-<section>
-<h2>📩 Follow the Series</h2>
-
-<p>
-This series is being released progressively.
-More chapters will be published soon.
-</p>
-
-<p>
-Stay connected with EMTSysLab for:
-</p>
-
-<ul>
-<li>Linux Hardening Tutorials</li>
-<li>Kubernetes Production Labs</li>
-<li>GLPI Automation & Templates</li>
-</ul>
-
-</section>
-
-</main>
-
-<footer style="text-align:center;margin-top:40px;padding:20px;background:#f4f4f4;">
-    <p>© 2026 EMTSysLab | Linux • Kubernetes • IT Automation</p>
+<footer>
+    &copy; 2026 EMTSysLab. All Rights Reserved.
 </footer>
 
 </body>

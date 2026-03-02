@@ -2,119 +2,73 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="description" content="GLPI Secure Deployment Series - Production-ready and security-focused GLPI deployment on Rocky Linux.">
+    <meta name="description" content="GLPI Secure Deployment Series on Rocky Linux 10 - Production-ready and security-focused implementation guide.">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GLPI Secure Deployment Series | EMTSysLab</title>
     <link rel="stylesheet" href="../../../../assets/css/style.css">
+    <style>
+        body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; color:#333; }
+        header { background:#0d47a1; color:white; padding:2rem 1rem; text-align:center; position:relative; }
+        nav { display:flex; justify-content:center; gap:1rem; margin-top:1rem; flex-wrap: wrap; }
+        nav a { color:white; text-decoration:none; font-weight:bold; padding:0.5rem 1rem; background:#1976d2; border-radius:5px; transition:0.3s; }
+        nav a:hover { background:#1565c0; }
+        #language-switcher { position:absolute; top:1rem; right:1rem; padding:0.3rem; border-radius:5px; border:none; font-weight:bold; }
+        section { padding:2rem 1rem; max-width:1000px; margin:0 auto; }
+        section h2 { color:#0d47a1; margin-bottom:1rem; }
+        .card { background:white; padding:1.5rem; border-radius:5px; box-shadow:0 2px 5px rgba(0,0,0,0.1); margin-bottom:1rem; }
+        .card a { text-decoration:none; color:#0d47a1; font-weight:bold; }
+        footer { text-align:center; padding:1rem; background:#0d47a1; color:white; margin-top:2rem; }
+    </style>
 </head>
 <body>
 
 <header>
-    <img src="../../../../assets/images/logo-emtsyslab.png" alt="EMTSysLab Logo" style="height:60px;">
+    <img src="../../../../assets/images/logo-emtsyslab.png" alt="EMTSysLab Logo" style="height:60px; margin-bottom:0.5rem;">
     <h1>GLPI Secure Deployment Series</h1>
-    <p>Production-Ready & Security-Oriented Deployment Guide</p>
+    <p>Production-Ready Deployment on Rocky Linux 10</p>
+
+    <select id="language-switcher">
+        <option value="en" selected>English</option>
+        <option value="es">Español</option>
+    </select>
+
+    <nav>
+        <a href="../../../../linux/">Linux</a>
+        <a href="../../../../kubernetes/">Kubernetes</a>
+        <a href="../../../../software/">Software</a>
+        <a href="../../../../newsletter/">Newsletter</a>
+    </nav>
 </header>
 
-<main style="max-width:900px;margin:auto;padding:20px;line-height:1.6;">
-
 <section>
-<h2>📘 About This Series</h2>
-<p>
-This technical series documents a professional and hardened deployment of GLPI
-on Rocky Linux 10, following production-grade security standards.
-</p>
-
-<p>
-Each chapter is released progressively and builds toward a complete,
-downloadable production deployment guide.
-</p>
+    <h2>About This Series</h2>
+    <p>
+        This technical series documents a hardened, production-grade deployment
+        of GLPI on Rocky Linux 10. Each chapter focuses on real-world
+        implementation practices suitable for enterprise environments.
+    </p>
 </section>
 
-<hr>
-
 <section>
-<h2>📚 Chapters</h2>
+    <h2>Available Chapters</h2>
 
-<ul>
-<li>
-✔ <strong>Part 1 — Server Baseline & OS Validation</strong><br>
-<a href="01-server-baseline.html">Read Article →</a>
-</li>
-<br>
+    <div class="card">
+        <h3>Part 1 — Server Baseline & OS Validation</h3>
+        <p>Initial system validation, hostname configuration, and security baseline checks.</p>
+        <p><strong>Status:</strong> Published ✅</p>
+        <a href="01-server-baseline.html">Read Chapter →</a>
+    </div>
 
-<li>
-🚧 <strong>Part 2 — Storage & LVM Design</strong><br>
-Status: In progress
-</li>
-<br>
-
-<li>
-🔒 <strong>Part 3 — Linux Hardening & Mount Security</strong><br>
-Status: Coming soon
-</li>
-<br>
-
-<li>
-🔒 <strong>Part 4 — Web Stack Deployment (Nginx + PHP-FPM)</strong><br>
-Status: Planned
-</li>
-<br>
-
-<li>
-🔒 <strong>Part 5 — Database Hardening (MariaDB)</strong><br>
-Status: Planned
-</li>
-<br>
-
-<li>
-🔒 <strong>Part 6 — GLPI Installation & Secure Configuration</strong><br>
-Status: Planned
-</li>
-
-</ul>
+    <div class="card">
+        <h3>Part 2 — LVM Design & Filesystem Hardening</h3>
+        <p>Enterprise storage design and mount security configuration.</p>
+        <p><strong>Status:</strong> In Progress 🚧</p>
+    </div>
 
 </section>
 
-<hr>
-
-<section>
-<h2>📦 Final Objective</h2>
-<p>
-Once the series is completed, a consolidated version will be released:
-</p>
-
-<ul>
-<li>📄 Production Deployment PDF Guide</li>
-<li>📁 Deployment Checklist</li>
-<li>⚙ Hardening Validation Script</li>
-</ul>
-
-<p><strong>Status:</strong> Work in Progress</p>
-
-</section>
-
-<hr>
-
-<section>
-<h2>📩 Follow EMTSysLab</h2>
-<p>
-New chapters are published progressively.
-Stay connected for updates on:
-</p>
-
-<ul>
-<li>Linux Hardening</li>
-<li>Kubernetes Production Labs</li>
-<li>IT Automation Scripts</li>
-<li>GLPI Templates & Deployment Tools</li>
-</ul>
-
-</section>
-
-</main>
-
-<footer style="text-align:center;margin-top:40px;padding:20px;background:#f4f4f4;">
-    <p>© 2026 EMTSysLab | Linux • Kubernetes • IT Automation</p>
+<footer>
+    &copy; 2026 EMTSysLab. All Rights Reserved.
 </footer>
 
 </body>
