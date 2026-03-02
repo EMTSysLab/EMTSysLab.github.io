@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Serie de Despliegue Seguro de GLPI - Parte 1. Línea base del servidor y validación del SO en Rocky Linux 10.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Despliegue Seguro de GLPI - Parte 1 | EMTSysLab</title>
+    <link rel="stylesheet" href="../../../../assets/css/style.css">
+    <style>
+        body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; color:#333; }
+        header { background:#0d47a1; color:white; padding:2rem 1rem; text-align:center; position:relative; }
+        nav { display:flex; justify-content:center; gap:1rem; margin-top:1rem; flex-wrap: wrap; }
+        nav a { color:white; text-decoration:none; font-weight:bold; padding:0.5rem 1rem; background:#1976d2; border-radius:5px; transition:0.3s; }
+        nav a:hover { background:#1565c0; }
+        #language-switcher { position:absolute; top:1rem; right:1rem; padding:0.3rem; border-radius:5px; border:none; font-weight:bold; }
+        section { padding:2rem 1rem; max-width:1000px; margin:0 auto; }
+        section h2 { color:#0d47a1; margin-bottom:1rem; }
+        pre { background:#1e1e1e; color:#f5f5f5; padding:1rem; border-radius:5px; overflow:auto; }
+        footer { text-align:center; padding:1rem; background:#0d47a1; color:white; margin-top:2rem; }
+        .back-link { margin-top:2rem; display:inline-block; font-weight:bold; }
+    </style>
+</head>
+<body>
+
+<header>
+    <img src="../../../../assets/images/logo-emtsyslab.png" alt="EMTSysLab Logo" style="height:60px; margin-bottom:0.5rem;">
+    <h1>Serie de Despliegue Seguro de GLPI</h1>
+    <p>Parte 1 — Línea Base del Servidor y Validación del SO</p>
+
+    <select id="language-switcher" onchange="switchLanguage(this.value)">
+        <option value="en">English</option>
+        <option value="es" selected>Español</option>
+    </select>
+
+    <nav>
+        <a href="../../../../linux/">Linux</a>
+        <a href="../../../../kubernetes/">Kubernetes</a>
+        <a href="../../../../software/">Software</a>
+        <a href="../../../../newsletter/">Newsletter</a>
+    </nav>
+</header>
+
+<section>
+<h2>📘 Introducción</h2>
+<p>
+Este capítulo valida la línea base del sistema operativo y prepara
+Rocky Linux 10 para un despliegue endurecido de GLPI.
+</p>
+</section>
+
+<section>
+<h2>🖥️ 1. Validación del Sistema Operativo</h2>
+
+<h3>Verificar Versión del SO</h3>
+<pre><code>cat /etc/os-release</code></pre>
+
+<h3>Verificar Versión del Kernel</h3>
+<pre><code>uname -r</code></pre>
+
+<pre><code>dnf update -y</code></pre>
+</section>
+
+<section>
+<h2>🌐 2. Configuración del Hostname</h2>
+
+<pre><code>hostnamectl set-hostname glpi-server</code></pre>
+
+<pre><code>hostnamectl status</code></pre>
+</section>
+
+<section>
+<h2>🔐 3. Validación Básica de Seguridad</h2>
+
+<pre><code>getenforce</code></pre>
+
+<pre><code>systemctl list-units --type=service --state=running</code></pre>
+</section>
+
+<section>
+<a href="index.html" class="back-link">← Volver al Resumen de la Serie</a>
+</section>
+
+<footer>
+    &copy; 2026 EMTSysLab. Todos los derechos reservados.
+</footer>
+
+<script>
+function switchLanguage(lang) {
+    if(lang === 'en'){
+        window.location.href = '../../../../software/ticketing/glpi/tutorials/01-server-baseline.html';
+    } else {
+        window.location.href = '01-server-baseline.html';
+    }
+}
+</script>
+
+</body>
+</html>
