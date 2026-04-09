@@ -6,7 +6,7 @@ hero:
   tagline: Aprende, automatiza y domina la administración de sistemas Linux, Kubernetes, Podman y más.
   actions:
     - text: Empezar con Linux
-      link: /linux/
+      link: /linux/hardening-rhel/
       icon: right-arrow
       variant: primary
     - text: Ver en GitHub
@@ -17,19 +17,27 @@ hero:
 
 ## ¿Qué encontrarás aquí?
 
-import { CardGrid, Card } from '@astrojs/starlight/components';
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
 
 <CardGrid stagger>
-  <Card title="Linux" icon="linux">
-    Guías de administración, scripting, RHEL, Rocky Linux y automatización del sistema.
-  </Card>
-  <Card title="Kubernetes" icon="rocket">
-    Labs prácticos de despliegue, gestión de clústeres y automatización con K8s en producción.
-  </Card>
-  <Card title="Podman & Docker" icon="box">
-    Contenedores sin root, comparativas, casos reales y migración Docker → Podman.
-  </Card>
-  <Card title="GLPI" icon="setting">
-    Despliegue seguro, plugins, automatización y gestión de tickets en producción.
-  </Card>
+  <LinkCard
+    title="Linux"
+    description="Guías de administración, scripting, RHEL, Rocky Linux y automatización del sistema."
+    href="/linux/hardening-rhel/"
+  />
+  <LinkCard
+    title="Kubernetes"
+    description="Labs prácticos de despliegue, gestión de clústeres y automatización con K8s en producción."
+    href="/linux/hardening-rhel/"
+  />
+  <LinkCard
+    title="Podman & Docker"
+    description="Contenedores sin root, comparativas, casos reales y migración Docker → Podman."
+    href="/linux/hardening-rhel/"
+  />
+  <LinkCard
+    title="GLPI"
+    description="Despliegue seguro, plugins, automatización y gestión de tickets en producción."
+    href="/linux/hardening-rhel/"
+  />
 </CardGrid>
