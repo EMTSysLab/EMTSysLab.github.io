@@ -9,10 +9,9 @@ export default defineConfig({
     starlight({
       title: 'EMTSysLab',
       description: 'Recursos, tutoriales y herramientas para administración de sistemas al siguiente nivel.',
-      defaultLocale: 'es',
+      defaultLocale: 'root',
       locales: {
-        es: { label: 'Español', lang: 'es' },
-        en: { label: 'English', lang: 'en' },
+        root: { label: 'Español', lang: 'es' },
       },
       social: [
         { icon: 'github', label: 'GitHub', href: 'https://github.com/EMTSysLab' },
