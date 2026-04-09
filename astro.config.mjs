@@ -42,8 +42,8 @@ export default defineConfig({
           ],
         },
         {
-          label: 'GLPI',
-          badge: { text: 'Próximamente', variant: 'caution' },
+          label: 'Inteligencia Artificial',
+          badge: { text: 'Nuevo', variant: 'tip' },
           items: [
             { label: 'Próximamente...', link: '#' },
           ],
