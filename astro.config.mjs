@@ -21,10 +21,32 @@ export default defineConfig({
         catppuccin({ defaultFlavour: 'mocha' }),
       ],
       sidebar: [
-        { label: 'Linux', autogenerate: { directory: 'linux' } },
-        { label: 'Kubernetes', autogenerate: { directory: 'kubernetes' } },
-        { label: 'Podman & Docker', autogenerate: { directory: 'containers' } },
-        { label: 'GLPI', autogenerate: { directory: 'glpi' } },
+        {
+          label: 'Linux',
+          items: [
+            { label: 'Introducción', slug: 'linux/index' },
+            { label: 'Hardening de RHEL', slug: 'linux/hardening-rhel' },
+            { label: 'SELinux avanzado', slug: 'linux/selinux-avanzado' },
+          ],
+        },
+        {
+          label: 'Kubernetes',
+          items: [
+            { label: 'Introducción', slug: 'kubernetes/index' },
+          ],
+        },
+        {
+          label: 'Podman & Docker',
+          items: [
+            { label: 'Introducción', slug: 'containers/index' },
+          ],
+        },
+        {
+          label: 'GLPI',
+          items: [
+            { label: 'Introducción', slug: 'glpi/index' },
+          ],
+        },
       ],
     }),
   ],
