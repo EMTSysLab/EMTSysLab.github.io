@@ -45,7 +45,7 @@ export default defineConfig({
           label: 'Inteligencia Artificial',
           badge: { text: 'Nuevo', variant: 'tip' },
           items: [
-            { label: 'Próximamente...', link: '#' },
+            { label: 'Ollama — LLMs locales', slug: 'ia/ollama-llms-locales' },
           ],
         },
       ],
