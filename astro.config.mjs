@@ -22,19 +22,31 @@ export default defineConfig({
       sidebar: [
         {
           label: 'Linux',
-          autogenerate: { directory: 'linux' },
+          items: [
+            { label: 'Hardening de RHEL', slug: 'linux/hardening-rhel' },
+            { label: 'SELinux avanzado', slug: 'linux/selinux-avanzado' },
+          ],
         },
         {
           label: 'Kubernetes',
-          autogenerate: { directory: 'kubernetes' },
+          badge: { text: 'Próximamente', variant: 'caution' },
+          items: [
+            { label: 'Próximamente...', link: '#' },
+          ],
         },
         {
           label: 'Podman & Docker',
-          autogenerate: { directory: 'containers' },
+          badge: { text: 'Próximamente', variant: 'caution' },
+          items: [
+            { label: 'Próximamente...', link: '#' },
+          ],
         },
         {
           label: 'GLPI',
-          autogenerate: { directory: 'glpi' },
+          badge: { text: 'Próximamente', variant: 'caution' },
+          items: [
+            { label: 'Próximamente...', link: '#' },
+          ],
         },
       ],
     }),
