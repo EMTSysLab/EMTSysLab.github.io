@@ -9,7 +9,7 @@ export default defineConfig({
     starlight({
       title: 'EMTSysLab',
       description: 'Recursos, tutoriales y herramientas para administración de sistemas al siguiente nivel.',
-      favicon: '/favicon.png',
+      favicon: '/favicon.ico',
       defaultLocale: 'root',
       locales: {
         root: { label: 'Español', lang: 'es' },
