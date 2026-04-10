@@ -17,6 +17,9 @@ export default defineConfig({
       social: [
         { icon: 'github', label: 'GitHub', href: 'https://github.com/EMTSysLab' },
       ],
+      components: {
+        Hero: './src/components/HeroTerminal.astro',
+      },
       plugins: [
         catppuccin({ defaultFlavour: 'mocha' }),
       ],

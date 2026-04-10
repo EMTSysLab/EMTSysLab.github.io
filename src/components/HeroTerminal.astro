@@ -1,0 +1,374 @@
+---
+// HeroTerminal.astro — Hero centrado con avatar y terminal a ancho completo
+---
+
+<div class="hero-custom">
+
+  <div class="hero-top">
+    <img src="/avatar.png" alt="EMTSysLab" class="hero-avatar" />
+    <h1 class="hero-title">
+      <span class="hero-title-main">EMTSysLab</span>
+      <span class="hero-title-sub">Learn & Automate IT</span>
+    </h1>
+    <p class="hero-description">
+      Un laboratorio personal hecho público. Casos reales, soluciones probadas en producción
+      y documentación que uso yo mismo — por si a ti también te salva el día.
+      <br/><br/>
+      <span style="font-size:0.9rem;color:#6c7086;font-style:italic;">Porque las mejores soluciones no deberían quedarse en un solo escritorio.</span>
+    </p>
+    <div class="hero-actions">
+      <a href="/linux/hardening-rhel/" class="btn-primary">Explorar documentación →</a>
+      <a href="https://github.com/EMTSysLab" class="btn-secondary" target="_blank">GitHub</a>
+    </div>
+  </div>
+
+  <div class="hero-terminal">
+    <div class="terminal-header">
+      <span class="terminal-dot red"></span>
+      <span class="terminal-dot yellow"></span>
+      <span class="terminal-dot green"></span>
+      <span class="terminal-title">elihu@emtsyslab:~</span>
+    </div>
+    <div class="terminal-body" id="terminal-body">
+      <div class="terminal-output" id="terminal-output"></div>
+      <div class="terminal-cursor-line">
+        <span class="terminal-prompt">$ </span>
+        <span id="terminal-typing"></span>
+        <span class="terminal-cursor">█</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat">
+      <span class="stat-number">3+</span>
+      <span class="stat-label">Artículos</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <span class="stat-number">4</span>
+      <span class="stat-label">Secciones</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <span class="stat-number">100%</span>
+      <span class="stat-label">Producción real</span>
+    </div>
+  </div>
+
+</div>
+
+<style>
+.hero-custom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem 2rem 1.5rem;
+  max-width: 860px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.hero-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(203, 166, 247, 0.5);
+  margin-bottom: 0.75rem;
+  box-shadow: 0 0 30px rgba(203, 166, 247, 0.2);
+}
+
+.hero-badge {
+  display: inline-block;
+  background: rgba(203, 166, 247, 0.12);
+  border: 1px solid rgba(203, 166, 247, 0.3);
+  color: #cba6f7;
+  padding: 0.25rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  margin-bottom: 1rem;
+  font-family: monospace;
+}
+
+.hero-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 0 1rem;
+  line-height: 1.1;
+}
+
+.hero-title-main {
+  font-size: 3.2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #cba6f7, #89b4fa, #94e2d5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-title-sub {
+  font-size: 1.1rem;
+  color: #a6adc8;
+  font-family: monospace;
+  font-weight: 400;
+  margin-top: 0.3rem;
+}
+
+.hero-description {
+  color: #cdd6f4;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  margin-bottom: 1.25rem;
+  max-width: 580px;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-primary {
+  background: #cba6f7;
+  color: #1e1e2e;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+}
+
+.btn-primary:hover {
+  background: #b4a0f0;
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: #cdd6f4;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: 1px solid rgba(205, 214, 244, 0.3);
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  border-color: #cba6f7;
+  color: #cba6f7;
+}
+
+.hero-terminal {
+  width: 100%;
+  background: #11111b;
+  border-radius: 12px;
+  border: 1px solid rgba(203, 166, 247, 0.2);
+  overflow: hidden;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+  margin-bottom: 1.5rem;
+}
+
+.terminal-header {
+  background: #181825;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.terminal-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.terminal-dot.red    { background: #f38ba8; }
+.terminal-dot.yellow { background: #f9e2af; }
+.terminal-dot.green  { background: #a6e3a1; }
+
+.terminal-title {
+  font-family: monospace;
+  font-size: 0.8rem;
+  color: #6c7086;
+  margin-left: 0.5rem;
+}
+
+.terminal-body {
+  padding: 1.25rem;
+  font-family: monospace;
+  font-size: 0.875rem;
+  line-height: 1.8;
+  height: 180px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  text-align: left;
+  color: #cdd6f4;
+}
+
+.terminal-output {
+  overflow: hidden;
+}
+
+.terminal-cursor-line {
+  display: flex;
+  align-items: center;
+}
+
+.terminal-prompt {
+  color: #a6e3a1;
+  margin-right: 0.25rem;
+}
+
+.terminal-cursor {
+  animation: blink 1s step-end infinite;
+  color: #cba6f7;
+  margin-left: 1px;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+.hero-stats {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-number {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #cba6f7;
+  font-family: monospace;
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  color: #a6adc8;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.stat-divider {
+  width: 1px;
+  height: 36px;
+  background: rgba(255,255,255,0.1);
+}
+
+.output    { color: #a6adc8; }
+.success   { color: #a6e3a1; }
+.warning   { color: #f9e2af; }
+.error     { color: #f38ba8; }
+.prompt-line { color: #a6e3a1; }
+</style>
+
+<script>
+const MAX_LINES = 8;
+
+const sequences = [
+  {
+    cmd: "sestatus",
+    output: [
+      '<span class="output">SELinux status:        <span class="success">enabled</span></span>',
+      '<span class="output">SELinux mount policy:  <span class="success">enforcing</span></span>',
+      '<span class="output">Policy MLS status:     <span class="success">enabled</span></span>',
+    ]
+  },
+  {
+    cmd: "kubectl get nodes",
+    output: [
+      '<span class="output">NAME         STATUS   ROLES    AGE   VERSION</span>',
+      '<span class="success">master-01    Ready    control  42d   v1.29.0</span>',
+      '<span class="success">worker-01    Ready    worker   42d   v1.29.0</span>',
+      '<span class="success">worker-02    Ready    worker   42d   v1.29.0</span>',
+    ]
+  },
+  {
+    cmd: "ollama run llama3.1:8b \"analiza los logs\"",
+    output: [
+      '<span class="output">Cargando modelo llama3.1:8b...</span>',
+      '<span class="success">Sin anomalías críticas detectadas.</span>',
+      '<span class="output">CPU load normal. Memoria al 67%.</span>',
+    ]
+  },
+  {
+    cmd: "podman ps --format \"table {{.Names}}\t{{.Status}}\"",
+    output: [
+      '<span class="output">NAMES           STATUS</span>',
+      '<span class="success">nginx-prod      Up 12 days</span>',
+      '<span class="success">postgres-db     Up 12 days</span>',
+      '<span class="success">redis-cache     Up 5 days</span>',
+    ]
+  },
+  {
+    cmd: "systemctl is-active firewalld auditd sshd",
+    output: [
+      '<span class="success">active</span>',
+      '<span class="success">active</span>',
+      '<span class="success">active</span>',
+    ]
+  }
+];
+
+let currentSeq = 0;
+let outputLines = [];
+const typingEl  = document.getElementById("terminal-typing");
+const outputEl  = document.getElementById("terminal-output");
+
+function sleep(ms) {
+  return new Promise(r => setTimeout(r, ms));
+}
+
+async function typeCommand(cmd) {
+  typingEl.textContent = "";
+  for (let ch of cmd) {
+    typingEl.textContent += ch;
+    await sleep(55 + Math.random() * 40);
+  }
+}
+
+async function showOutput(lines) {
+  for (let line of lines) {
+    outputLines.push(line);
+    if (outputLines.length > MAX_LINES) outputLines.shift();
+    outputEl.innerHTML = outputLines.join("<br>");
+    await sleep(180);
+  }
+}
+
+async function runSequence() {
+  while (true) {
+    const seq = sequences[currentSeq % sequences.length];
+    await sleep(800);
+    await typeCommand(seq.cmd);
+    await sleep(350);
+    outputLines.push('<span class="prompt-line">$ ' + seq.cmd + '</span>');
+    if (outputLines.length > MAX_LINES) outputLines.shift();
+    typingEl.textContent = "";
+    await showOutput(seq.output);
+    outputLines.push("");
+    if (outputLines.length > MAX_LINES) outputLines.shift();
+    currentSeq++;
+    await sleep(2200);
+  }
+}
+
+runSequence();
+</script>

@@ -1,46 +1,45 @@
 ---
 title: EMTSysLab
-description: Recursos, tutoriales y herramientas para llevar la administración de sistemas al siguiente nivel.
+description: Un laboratorio personal hecho público. Casos reales, soluciones probadas en producción y documentación que uso yo mismo.
 template: splash
 hero:
-  image:
-    file: ../../assets/avatar.png
-    alt: EMTSysLab avatar
-  tagline: Aprende, automatiza y domina la administración de sistemas Linux, Kubernetes, Podman y más.
-  actions:
-    - text: Empezar con Linux
-      link: /linux/hardening-rhel/
-      icon: right-arrow
-      variant: primary
-    - text: Ver en GitHub
-      link: https://github.com/EMTSysLab
-      icon: github
-      variant: secondary
+  tagline: " "
 ---
 
 ## ¿Qué encontrarás aquí?
 
-import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.5rem;">
 
-<CardGrid stagger>
-  <LinkCard
-    title="Linux"
-    description="Guías de administración, scripting, RHEL, Rocky Linux y automatización del sistema."
-    href="/linux/hardening-rhel/"
-  />
-  <LinkCard
-    title="Kubernetes"
-    description="Labs prácticos de despliegue, gestión de clústeres y automatización con K8s en producción."
-    href="#"
-  />
-  <LinkCard
-    title="Podman & Docker"
-    description="Contenedores sin root, comparativas, casos reales y migración Docker → Podman."
-    href="#"
-  />
-  <LinkCard
-    title="Inteligencia Artificial"
-    description="IA aplicada a sysadmin, LLMs locales con Ollama, agentes para automatización IT."
-    href="/ia/ollama-llms-locales/"
-  />
-</CardGrid>
+  <a href="/linux/hardening-rhel/" style="display:flex;flex-direction:column;justify-content:space-between;padding:1.25rem 1.5rem;border-radius:8px;border:1px solid rgba(255,255,255,0.1);text-decoration:none;background:rgba(255,255,255,0.03);transition:border-color 0.2s;">
+    <div>
+      <div style="font-weight:700;color:#cdd6f4;margin-bottom:0.5rem;">Linux</div>
+      <div style="font-size:0.9rem;color:#a6adc8;line-height:1.6;">Guías de administración, scripting, RHEL, Rocky Linux y automatización del sistema.</div>
+    </div>
+    <div style="margin-top:1rem;color:#cba6f7;font-size:0.9rem;">Explorar →</div>
+  </a>
+
+  <a href="#" style="display:flex;flex-direction:column;justify-content:space-between;padding:1.25rem 1.5rem;border-radius:8px;border:1px solid rgba(255,255,255,0.1);text-decoration:none;background:rgba(255,255,255,0.03);transition:border-color 0.2s;">
+    <div>
+      <div style="font-weight:700;color:#cdd6f4;margin-bottom:0.5rem;">Kubernetes</div>
+      <div style="font-size:0.9rem;color:#a6adc8;line-height:1.6;">Labs prácticos de despliegue, gestión de clústeres y automatización con K8s en producción.</div>
+    </div>
+    <div style="margin-top:1rem;color:#cba6f7;font-size:0.9rem;">Próximamente →</div>
+  </a>
+
+  <a href="#" style="display:flex;flex-direction:column;justify-content:space-between;padding:1.25rem 1.5rem;border-radius:8px;border:1px solid rgba(255,255,255,0.1);text-decoration:none;background:rgba(255,255,255,0.03);transition:border-color 0.2s;">
+    <div>
+      <div style="font-weight:700;color:#cdd6f4;margin-bottom:0.5rem;">Podman & Docker</div>
+      <div style="font-size:0.9rem;color:#a6adc8;line-height:1.6;">Contenedores sin root, comparativas, casos reales y migración Docker → Podman.</div>
+    </div>
+    <div style="margin-top:1rem;color:#cba6f7;font-size:0.9rem;">Próximamente →</div>
+  </a>
+
+  <a href="/ia/ollama-llms-locales/" style="display:flex;flex-direction:column;justify-content:space-between;padding:1.25rem 1.5rem;border-radius:8px;border:1px solid rgba(255,255,255,0.1);text-decoration:none;background:rgba(255,255,255,0.03);transition:border-color 0.2s;">
+    <div>
+      <div style="font-weight:700;color:#cdd6f4;margin-bottom:0.5rem;">Inteligencia Artificial</div>
+      <div style="font-size:0.9rem;color:#a6adc8;line-height:1.6;">IA aplicada a sysadmin, LLMs locales con Ollama, agentes para automatización IT.</div>
+    </div>
+    <div style="margin-top:1rem;color:#cba6f7;font-size:0.9rem;">Explorar →</div>
+  </a>
+
+</div>
