@@ -206,11 +206,12 @@
   font-family: monospace;
   font-size: 0.875rem;
   line-height: 1.8;
-  height: 180px;
+  height: 290px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: flex-start;
+  padding-top: 1rem;
   text-align: left;
   color: #cdd6f4;
 }
@@ -280,93 +281,109 @@
 </style>
 
 <script>
-const MAX_LINES = 8;
+const MAX_LINES = 10;
 
 const sequences = [
   {
     cmd: "sestatus",
     output: [
-      '<span class="output">SELinux status:        <span class="success">enabled</span></span>',
-      '<span class="output">SELinux mount policy:  <span class="success">enforcing</span></span>',
-      '<span class="output">Policy MLS status:     <span class="success">enabled</span></span>',
+      'SELinux status:        <span style="color:#a6e3a1">enabled</span>',
+      'SELinux mount policy:  <span style="color:#a6e3a1">enforcing</span>',
+      'Policy MLS status:     <span style="color:#a6e3a1">enabled</span>',
     ]
   },
   {
     cmd: "kubectl get nodes",
     output: [
-      '<span class="output">NAME         STATUS   ROLES    AGE   VERSION</span>',
-      '<span class="success">master-01    Ready    control  42d   v1.29.0</span>',
-      '<span class="success">worker-01    Ready    worker   42d   v1.29.0</span>',
-      '<span class="success">worker-02    Ready    worker   42d   v1.29.0</span>',
+      '<span style="color:#a6adc8">NAME        STATUS   ROLES          AGE</span>',
+      '<span style="color:#a6e3a1">master-01   Ready    control-plane  42d</span>',
+      '<span style="color:#a6e3a1">master-02   Ready    control-plane  42d</span>',
+      '<span style="color:#a6e3a1">master-03   Ready    control-plane  42d</span>',
+      '<span style="color:#a6e3a1">worker-01   Ready    worker         42d</span>',
+      '<span style="color:#a6e3a1">worker-02   Ready    worker         42d</span>',
+      '<span style="color:#a6e3a1">worker-03   Ready    worker         42d</span>',
     ]
   },
   {
-    cmd: "ollama run llama3.1:8b \"analiza los logs\"",
+    cmd: "ollama run llama3.1:8b",
     output: [
-      '<span class="output">Cargando modelo llama3.1:8b...</span>',
-      '<span class="success">Sin anomalías críticas detectadas.</span>',
-      '<span class="output">CPU load normal. Memoria al 67%.</span>',
+      '<span style="color:#a6adc8">Cargando modelo llama3.1:8b...</span>',
+      '<span style="color:#a6e3a1">Sin anomalías críticas detectadas.</span>',
+      '<span style="color:#a6adc8">CPU load normal. Memoria al 67%.</span>',
     ]
   },
   {
-    cmd: "podman ps --format \"table {{.Names}}\t{{.Status}}\"",
+    cmd: "podman ps",
     output: [
-      '<span class="output">NAMES           STATUS</span>',
-      '<span class="success">nginx-prod      Up 12 days</span>',
-      '<span class="success">postgres-db     Up 12 days</span>',
-      '<span class="success">redis-cache     Up 5 days</span>',
+      '<span style="color:#a6adc8">NAMES           STATUS</span>',
+      '<span style="color:#a6e3a1">nginx-prod      Up 12 days</span>',
+      '<span style="color:#a6e3a1">postgres-db     Up 12 days</span>',
+      '<span style="color:#a6e3a1">redis-cache     Up 5 days</span>',
     ]
   },
   {
     cmd: "systemctl is-active firewalld auditd sshd",
     output: [
-      '<span class="success">active</span>',
-      '<span class="success">active</span>',
-      '<span class="success">active</span>',
+      '<span style="color:#a6e3a1">active</span>',
+      '<span style="color:#a6e3a1">active</span>',
+      '<span style="color:#a6e3a1">active</span>',
     ]
   }
 ];
 
 let currentSeq = 0;
-let outputLines = [];
-const typingEl  = document.getElementById("terminal-typing");
-const outputEl  = document.getElementById("terminal-output");
+let lines = [];
+
+const typingEl = document.getElementById("terminal-typing");
+const outputEl = document.getElementById("terminal-output");
 
 function sleep(ms) {
   return new Promise(r => setTimeout(r, ms));
+}
+
+function render() {
+  outputEl.innerHTML = lines.slice(-MAX_LINES).map(l => `<div style="min-height:1.4em;white-space:pre;font-family:monospace">${l}</div>`).join("");
 }
 
 async function typeCommand(cmd) {
   typingEl.textContent = "";
   for (let ch of cmd) {
     typingEl.textContent += ch;
-    await sleep(55 + Math.random() * 40);
-  }
-}
-
-async function showOutput(lines) {
-  for (let line of lines) {
-    outputLines.push(line);
-    if (outputLines.length > MAX_LINES) outputLines.shift();
-    outputEl.innerHTML = outputLines.join("<br>");
-    await sleep(180);
+    await sleep(60 + Math.random() * 35);
   }
 }
 
 async function runSequence() {
+  await sleep(800);
   while (true) {
     const seq = sequences[currentSeq % sequences.length];
-    await sleep(800);
+
+    // Escribir comando letra a letra
     await typeCommand(seq.cmd);
-    await sleep(350);
-    outputLines.push('<span class="prompt-line">$ ' + seq.cmd + '</span>');
-    if (outputLines.length > MAX_LINES) outputLines.shift();
+    await sleep(500);
+
+    // Pasar comando al historial
+    lines.push('<span style="color:#a6e3a1">$ </span><span style="color:#cdd6f4">' + seq.cmd + '</span>');
     typingEl.textContent = "";
-    await showOutput(seq.output);
-    outputLines.push("");
-    if (outputLines.length > MAX_LINES) outputLines.shift();
+    render();
+
+    // Mostrar output línea a línea
+    for (let line of seq.output) {
+      lines.push(line);
+      render();
+      await sleep(220);
+    }
+
+    // Pausa para leer el resultado
+    await sleep(2500);
+
+    // Limpiar silenciosamente
+    await sleep(300);
+    lines = [];
+    render();
+    await sleep(400);
+
     currentSeq++;
-    await sleep(2200);
   }
 }
 

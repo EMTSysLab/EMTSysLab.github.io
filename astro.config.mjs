@@ -19,10 +19,12 @@ export default defineConfig({
       ],
       components: {
         Hero: './src/components/HeroTerminal.astro',
+        Head: './src/components/Head.astro',
       },
       plugins: [
         catppuccin({ defaultFlavour: 'mocha' }),
       ],
+      customCss: ['./src/styles/global.css'],
       sidebar: [
         {
           label: 'Linux',

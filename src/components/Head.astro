@@ -1,0 +1,9 @@
+---
+// Head.astro — forzar tema oscuro siempre
+import Default from "@astrojs/starlight/components/Head.astro";
+---
+<Default {...Astro.props}><slot /></Default>
+<script is:inline>
+  document.documentElement.setAttribute("data-theme", "dark");
+  localStorage.setItem("starlight-theme", "dark");
+</script>
