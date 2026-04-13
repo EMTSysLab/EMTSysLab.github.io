@@ -29,6 +29,7 @@ export default defineConfig({
         {
           label: 'Linux',
           items: [
+            { label: 'Auditoría de seguridad Linux — caso real ENS', slug: 'linux/auditoria-linux-ens-caso-real' },
             { label: 'Hardening de RHEL', slug: 'linux/hardening-rhel' },
             { label: 'SELinux avanzado', slug: 'linux/selinux-avanzado' },
           ],
