@@ -35,14 +35,7 @@ export default defineConfig({
           ],
         },
         {
-          label: 'Kubernetes',
-          badge: { text: 'Próximamente', variant: 'caution' },
-          items: [
-            { label: 'Próximamente...', link: '#' },
-          ],
-        },
-        {
-          label: 'Podman & Docker',
+          label: 'Kubernetes, Podman & Docker',
           badge: { text: 'Próximamente', variant: 'caution' },
           items: [
             { label: 'Próximamente...', link: '#' },
@@ -53,6 +46,13 @@ export default defineConfig({
           badge: { text: 'Nuevo', variant: 'tip' },
           items: [
             { label: 'Ollama — LLMs locales', slug: 'ia/ollama-llms-locales' },
+          ],
+        },
+        {
+          label: 'SysAdmin Toolkit',
+          badge: { text: 'Próximamente', variant: 'caution' },
+          items: [
+            { label: 'Próximamente...', link: '#' },
           ],
         },
       ],
