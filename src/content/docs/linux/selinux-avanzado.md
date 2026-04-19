@@ -2,7 +2,7 @@
 title: SELinux avanzado en producción
 description: Gestión avanzada de SELinux en sistemas RHEL y Rocky Linux. Políticas personalizadas, troubleshooting real y casos de uso en producción.
 sidebar:
-  order: 2
+  order: 3
 ---
 
 SELinux es el control de acceso obligatorio (MAC) más potente disponible en Linux. La mayoría de administradores lo desactiva cuando da problemas. Los que saben cómo funciona lo usan como ventaja.

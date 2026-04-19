@@ -2,7 +2,7 @@
 title: Auditoría de seguridad Linux — caso real ENS
 description: Caso real anonimizado de auditoría de seguridad en servidores Linux bajo el Esquema Nacional de Seguridad (ENS) categoría media. Hallazgos, comandos y recomendaciones reales.
 sidebar:
-  order: 3
+  order: 1
 ---
 
 Este artículo documenta un caso real de auditoría de seguridad realizada sobre servidores Linux en producción, anonimizado para proteger la confidencialidad del cliente. El objetivo era evaluar el cumplimiento del **Esquema Nacional de Seguridad (ENS) categoría media**.

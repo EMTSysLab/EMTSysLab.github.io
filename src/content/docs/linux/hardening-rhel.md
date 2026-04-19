@@ -2,7 +2,7 @@
 title: Hardening de RHEL en producción
 description: Guía completa de bastionado para sistemas Red Hat Enterprise Linux en entornos de producción real.
 sidebar:
-  order: 1
+  order: 2
 ---
 
 El hardening de un sistema RHEL no es una lista de comandos a ejecutar una vez. Es una filosofía de defensa en profundidad que debes aplicar desde el primer boot y mantener de forma continua.
