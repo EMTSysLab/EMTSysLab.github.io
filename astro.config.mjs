@@ -32,7 +32,7 @@ export default defineConfig({
             { label: 'Hardening de RHEL', slug: 'linux/hardening-rhel' },
             { label: 'SELinux avanzado', slug: 'linux/selinux-avanzado' },
             { label: 'Auditoría de seguridad Linux — caso real ENS', slug: 'linux/auditoria-linux-ens-caso-real' },
-            { label: 'Ampliación de disco LVM en vSphere', slug: 'linux/ampliacion-disco-lvm-rhel-vsphere' },
+            { label: 'Ampliación de disco LVM en vSphere', slug: 'linux/ampliacion-disco-lvm-rhel-vsphere', badge: { text: 'Nuevo', variant: 'tip' } },
           ],
         },
         {
@@ -44,7 +44,6 @@ export default defineConfig({
         },
         {
           label: 'Inteligencia Artificial',
-          badge: { text: 'Nuevo', variant: 'tip' },
           items: [
             { label: 'Ollama — LLMs locales', slug: 'ia/ollama-llms-locales' },
           ],
