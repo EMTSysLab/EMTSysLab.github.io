@@ -32,6 +32,7 @@ export default defineConfig({
             { label: 'Auditoría de seguridad Linux — caso real ENS', slug: 'linux/auditoria-linux-ens-caso-real' },
             { label: 'Hardening de RHEL', slug: 'linux/hardening-rhel' },
             { label: 'SELinux avanzado', slug: 'linux/selinux-avanzado' },
+            { label: 'Ampliación de disco LVM en vSphere', slug: 'linux/ampliacion-disco-lvm-rhel-vsphere' },
           ],
         },
         {
