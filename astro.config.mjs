@@ -33,6 +33,7 @@ export default defineConfig({
             { label: 'SELinux avanzado', slug: 'linux/selinux-avanzado' },
             { label: 'Auditoría de seguridad Linux — caso real ENS', slug: 'linux/auditoria-linux-ens-caso-real' },
             { label: 'Ampliación de disco LVM en vSphere', slug: 'linux/ampliacion-disco-lvm-rhel-vsphere', badge: { text: 'Nuevo', variant: 'tip' } },
+            { label: 'Cuánto sabes de tu servidor Linux', link: '#', badge: { text: 'Próximamente', variant: 'caution' } },
           ],
         },
         {
