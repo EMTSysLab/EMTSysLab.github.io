@@ -2,7 +2,7 @@
 title: Hardening de RHEL en producción
 description: Guía completa de bastionado para sistemas Red Hat Enterprise Linux en entornos de producción real.
 sidebar:
-  order: 2
+  order: 1
 ---
 
 ![Hardening RHEL en Producción](/hardening-rhel-banner.png)
