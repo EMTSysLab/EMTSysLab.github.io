@@ -5,6 +5,9 @@ sidebar:
   order: 4
 ---
 
+![Ampliación de disco LVM en RHEL con vSphere](/ampliacion-lvm.png)
+
+
 Una de las tareas mas habituales en administracion de sistemas es quedarse sin espacio en un volumen y necesitar ampliarlo sin poder reiniciar el servidor ni limpiar ficheros.
 
 ---
