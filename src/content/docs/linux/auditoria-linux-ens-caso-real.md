@@ -5,6 +5,9 @@ sidebar:
   order: 3
 ---
 
+![Auditoría de Seguridad Linux — Caso Real ENS](/auditoria-ens-banner.png)
+
+
 Este artículo documenta un caso real de auditoría de seguridad realizada sobre servidores Linux en producción, anonimizado para proteger la confidencialidad del cliente. El objetivo era evaluar el cumplimiento del **Esquema Nacional de Seguridad (ENS) categoría media**.
 
 Lo que verás aquí no es teoría — son hallazgos reales, comandos reales y outputs reales de sistemas en producción.

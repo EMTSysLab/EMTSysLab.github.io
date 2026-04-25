@@ -32,8 +32,8 @@ export default defineConfig({
             { label: 'Hardening de RHEL', slug: 'linux/hardening-rhel' },
             { label: 'SELinux avanzado', slug: 'linux/selinux-avanzado' },
             { label: 'Auditoría de seguridad Linux — caso real ENS', slug: 'linux/auditoria-linux-ens-caso-real' },
-            { label: 'Ampliación de disco LVM en vSphere', slug: 'linux/ampliacion-disco-lvm-rhel-vsphere', badge: { text: 'Nuevo', variant: 'tip' } },
-            { label: 'Cuánto sabes de tu servidor Linux', link: '#', badge: { text: 'Próximamente', variant: 'caution' } },
+            { label: 'Ampliación de disco LVM en vSphere', slug: 'linux/ampliacion-disco-lvm-rhel-vsphere' },
+            { label: 'Cuánto sabes de tu servidor Linux', slug: 'linux/descubrimiento-infraestructura-linux', badge: { text: 'Nuevo', variant: 'tip' } },
           ],
         },
         {
@@ -47,6 +47,25 @@ export default defineConfig({
           label: 'Inteligencia Artificial',
           items: [
             { label: 'Ollama — LLMs locales', slug: 'ia/ollama-llms-locales' },
+          ],
+        },
+        {
+          label: 'Road to Cert',
+          badge: { text: 'Nuevo', variant: 'tip' },
+          items: [
+            {
+              label: 'RHCSA — EX200',
+              items: [
+                { label: 'Qué es el RHCSA', slug: 'rhcsa/intro-examen', badge: { text: 'Nuevo', variant: 'tip' } },
+              ],
+            },
+          ],
+        },
+        {
+          label: 'Automatización & Scripting',
+          badge: { text: 'Próximamente', variant: 'caution' },
+          items: [
+            { label: 'Próximamente...', link: '#' },
           ],
         },
         {
