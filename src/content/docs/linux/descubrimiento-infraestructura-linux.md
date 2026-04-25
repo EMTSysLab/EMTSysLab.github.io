@@ -5,6 +5,9 @@ sidebar:
   order: 5
 ---
 
+![Cuánto sabes de tu servidor Linux](/descubrimiento-linux.png)
+
+
 ¿Cuánto sabes realmente de los servidores que administras?
 
 No me refiero a si sabes que hay un nginx corriendo o que la base de datos es MySQL. Me refiero a saber exactamente qué versión del kernel tienes, qué puertos están escuchando en qué interfaces, qué usuarios tienen shell interactiva, cuándo expiran los certificados SSL o qué crons se ejecutan a las 3 de la madrugada.
