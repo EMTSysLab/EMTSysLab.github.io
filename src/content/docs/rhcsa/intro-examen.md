@@ -6,6 +6,9 @@ sidebar:
   order: 1
 ---
 
+![Road to RHCSA — Qué es el EX200](/rhcsa-1-que-es-rhcsa.png)
+
+
 import { Aside, Badge, Card, CardGrid } from '@astrojs/starlight/components';
 
 <Aside type="note" title="Serie RHCSA sobre RHEL 10">
