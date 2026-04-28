@@ -5,6 +5,9 @@ sidebar:
   order: 1
 ---
 
+![LLMs Locales con Ollama en Linux](/llms-locales-ollama.png)
+
+
 Ollama es la forma más sencilla de ejecutar modelos de lenguaje grandes (LLMs) directamente en tu infraestructura Linux. Sin enviar datos a terceros, sin coste por petición y con control total sobre el modelo.
 
 Esta guía cubre la instalación, gestión de modelos y casos de uso reales para administradores de sistemas.
