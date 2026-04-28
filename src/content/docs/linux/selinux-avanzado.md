@@ -5,6 +5,9 @@ sidebar:
   order: 2
 ---
 
+![SELinux Avanzado en Producción](/selinux-avanzado-en-pro.png)
+
+
 SELinux es el control de acceso obligatorio (MAC) más potente disponible en Linux. La mayoría de administradores lo desactiva cuando da problemas. Los que saben cómo funciona lo usan como ventaja.
 
 Esta guía asume que ya tienes SELinux en `Enforcing`. Si no, vuelve a la guía de hardening.
