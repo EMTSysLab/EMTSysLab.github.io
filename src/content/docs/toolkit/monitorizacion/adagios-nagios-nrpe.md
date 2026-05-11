@@ -6,6 +6,9 @@ sidebar:
   order: 1
 ---
 
+![Adagios — Monitorización con Nagios y NRPE](/adagios-nagios-banner.png)
+
+
 Adagios no es la herramienta de monitorización más moderna ni la más potente. Pero si quieres entender cómo funciona un ecosistema de monitorización basado en Nagios y NRPE desde cero, es probablemente la forma más sencilla de hacerlo.
 
 Este artículo documenta la instalación y configuración de Adagios en un entorno real sobre RHEL, con aproximadamente 500 hosts mixtos — Linux y Windows — monitorizados mediante agentes NRPE.
