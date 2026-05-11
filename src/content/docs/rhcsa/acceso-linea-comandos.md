@@ -1,0 +1,142 @@
+---
+title: "Acceso a la línea de comandos en RHEL"
+description: "Bash, consolas virtuales, SSH y autenticación por clave pública. Lo que el examen EX200 da por sabido desde el minuto uno."
+sidebar:
+  label: "Acceso a la línea de comandos"
+  order: 2
+---
+
+import { Aside, Code } from '@astrojs/starlight/components';
+
+## En el EX200 no hay ratón
+
+Hay una terminal y un temporizador. Nada más.
+
+Esto le pilla desprevenido a gente que administra servidores pero lo hace saltando entre Cockpit, Webmin o el panel de vSphere. Son herramientas válidas, pero el examen no las va a ofrecer. Tres horas, terminal, y que salga lo que tenga que salir.
+
+La shell por defecto en RHEL es Bash. Llevas años usándola aunque no lo sepas: cada vez que ejecutas un comando en un servidor Red Hat, pasas por Bash. El examen asume que eso ya lo tienes integrado.
+
+---
+
+## Cómo funciona un comando
+
+Un comando tiene tres partes:
+
+```bash
+comando [opciones] [argumentos]
+```
+
+Ejemplo:
+
+```bash
+usermod -L usuario01
+```
+
+`usermod` es el programa. `-L` le dice qué tiene que hacer. `usuario01` es sobre quién actúa. Esta estructura se repite en prácticamente todo lo que ejecutas.
+
+El prompt te dice quién eres:
+
+```bash
+# Usuario normal
+usuario@host:~$
+
+# Root
+root@host:~#
+```
+
+La `#` al final indica root. En producción es una señal de que tienes que ir con cuidado, no de que puedes hacer cualquier cosa sin consecuencias.
+
+---
+
+## Acceso local: consolas virtuales
+
+Cuando tienes teclado y monitor en el servidor, RHEL te da varias consolas virtuales independientes. En RHEL 10, si hay entorno gráfico instalado ocupa `tty1`. Las consolas de texto van de `tty2` a `tty6`. Para cambiar entre ellas: `Ctrl + Alt + F2`, `Ctrl + Alt + F3`, etc.
+
+Dicho esto — la mayoría de servidores de producción no tienen entorno gráfico. No aporta nada y consume recursos. El acceso por consola local tiene su momento cuando la red no responde, el sistema no arranca o tienes que editar GRUB en caliente.
+
+<Aside type="tip" title="En el examen">
+El EX200 es completamente remoto vía SSH. Las consolas virtuales no las vas a tocar durante el examen, pero aparecen en preguntas sobre arranque y recuperación del sistema.
+</Aside>
+
+---
+
+## SSH: el acceso real a servidores
+
+El noventa y algo por ciento del tiempo que pasas administrando servidores Linux lo haces por SSH. No es un complemento ni una alternativa al acceso "de verdad". Es el acceso de verdad.
+
+Toda la comunicación va cifrada: credenciales, comandos, salida. Importa en redes corporativas donde el tráfico puede ser monitorizado, y también en entornos cloud donde el servidor nunca has visto físicamente.
+
+Conexión básica:
+
+```bash
+ssh usuario@servidor
+```
+
+Si el servidor usa un puerto diferente al 22:
+
+```bash
+ssh -p 2222 usuario@servidor
+```
+
+La primera vez que te conectas a un servidor nuevo, SSH muestra la huella digital de su clave y pregunta si confías en él. En producción eso no se acepta a ciegas: se verifica con el equipo de infraestructura o comparando con el inventario. Una vez aceptada, el servidor queda en `~/.ssh/known_hosts`. Si en una conexión futura la clave cambia sin que hayas hecho nada, SSH bloquea la sesión. Ese comportamiento es correcto — es exactamente para lo que sirve.
+
+Para cerrar la sesión:
+
+```bash
+exit
+```
+
+O `Ctrl + D`. Si tienes sesiones SSH anidadas — conectado a un servidor desde el que te conectas a otro — cada `exit` cierra una capa. Un error frecuente en el examen es cerrar la sesión equivocada por perder el hilo de dónde estás.
+
+---
+
+## Autenticación por clave pública
+
+Las contraseñas se pueden robar, adivinar o filtrar. En entornos donde la seguridad importa — prácticamente todos — la autenticación por clave pública es el estándar. En muchos sitios es la única opción disponible: el servidor directamente no acepta contraseñas.
+
+Funciona con un par de claves:
+
+- **Clave privada** — se queda en tu máquina. No se comparte. Es equivalente a tu contraseña.
+- **Clave pública** — se copia al servidor en `~/.ssh/authorized_keys`. Puede estar en todos los servidores que necesites.
+
+Cuando te conectas, SSH verifica que tienes la clave privada que corresponde a la pública registrada. Si coincide, accedes sin contraseña.
+
+Generar el par:
+
+```bash
+ssh-keygen -t ed25519 -C "comentario-identificativo"
+```
+
+`ed25519` es el algoritmo recomendado. Más seguro y más rápido que RSA de 2048 bits, que todavía aparece en documentación que no se actualiza desde hace años.
+
+Copiar la clave pública al servidor:
+
+```bash
+ssh-copy-id usuario@servidor
+```
+
+A partir de ahí, la conexión es directa:
+
+```bash
+ssh usuario@servidor
+```
+
+Cuando trabajas con un fichero de clave específico — habitual en cloud o cuando gestionas claves distintas por cliente:
+
+```bash
+ssh -i ~/.ssh/clave_cliente.pem usuario@servidor
+```
+
+<Aside type="caution" title="Permisos de la clave privada">
+SSH rechaza la clave privada si los permisos del fichero son demasiado abiertos. Solo el propietario puede leerla. Si ves el error `Permissions are too open`:
+
+```bash
+chmod 600 ~/.ssh/id_ed25519
+```
+</Aside>
+
+---
+
+## Lo que el examen mide aquí
+
+El EX200 no pregunta qué es SSH. Lo que evalúa es que seas capaz de conectarte, trabajar y configurar autenticación por clave cuando una tarea lo requiere, sin perder tiempo. Si durante el examen tienes que pararte a recordar cómo copiar una clave pública, el cronómetro no espera.

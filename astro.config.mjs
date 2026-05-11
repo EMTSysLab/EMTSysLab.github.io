@@ -56,7 +56,58 @@ export default defineConfig({
             {
               label: 'RHCSA — EX200',
               items: [
-                { label: 'Qué es el RHCSA', slug: 'rhcsa/intro-examen', badge: { text: 'Nuevo', variant: 'tip' } },
+                {
+                  label: 'Bloque 1 — Fundamentos',
+                  items: [
+                    { label: 'Qué es el RHCSA', slug: 'rhcsa/intro-examen' },
+                    { label: 'Entorno de laboratorio KVM', slug: 'rhcsa/laboratorio-kvm' },
+                    { label: 'Acceso a la línea de comandos', slug: 'rhcsa/acceso-linea-comandos', badge: { text: 'Nuevo', variant: 'tip' } },
+                    { label: 'Kickstart en RHEL 10', link: '#', badge: { text: 'Próximamente', variant: 'caution' } },
+                    { label: 'Comandos esenciales', link: '#', badge: { text: 'Próximamente', variant: 'caution' } },
+                    { label: 'Gestión de paquetes DNF5', link: '#', badge: { text: 'Próximamente', variant: 'caution' } },
+                  ],
+                },
+                {
+                  label: 'Bloque 2 — Administración',
+                  collapsed: true,
+                  items: [
+                    { label: 'Usuarios y grupos', link: '#', badge: { text: 'Próximamente', variant: 'caution' } },
+                    { label: 'Permisos y ACLs', link: '#', badge: { text: 'Próximamente', variant: 'caution' } },
+                    { label: 'Arranque GRUB2 y systemd', link: '#', badge: { text: 'Próximamente', variant: 'caution' } },
+                    { label: 'Systemd avanzado', link: '#', badge: { text: 'Próximamente', variant: 'caution' } },
+                    { label: 'Almacenamiento y LVM', link: '#', badge: { text: 'Próximamente', variant: 'caution' } },
+                    { label: 'XFS, Stratis y VDO', link: '#', badge: { text: 'Próximamente', variant: 'caution' } },
+                  ],
+                },
+                {
+                  label: 'Bloque 3 — Seguridad y red',
+                  collapsed: true,
+                  items: [
+                    { label: 'Firewalld', link: '#', badge: { text: 'Próximamente', variant: 'caution' } },
+                    { label: 'SELinux en el examen', link: '#', badge: { text: 'Próximamente', variant: 'caution' } },
+                    { label: 'Red con NetworkManager', link: '#', badge: { text: 'Próximamente', variant: 'caution' } },
+                    { label: 'Tareas programadas', link: '#', badge: { text: 'Próximamente', variant: 'caution' } },
+                    { label: 'SSH hardening', link: '#', badge: { text: 'Próximamente', variant: 'caution' } },
+                  ],
+                },
+                {
+                  label: 'Bloque 4 — Lo nuevo en RHEL 10',
+                  collapsed: true,
+                  items: [
+                    { label: 'Podman en el RHCSA', link: '#', badge: { text: 'Próximamente', variant: 'caution' } },
+                    { label: 'Cockpit', link: '#', badge: { text: 'Próximamente', variant: 'caution' } },
+                    { label: 'Simulacro EX200', link: '#', badge: { text: 'Próximamente', variant: 'caution' } },
+                  ],
+                },
+                {
+                  label: 'Bloque 5 — Estrategia',
+                  collapsed: true,
+                  items: [
+                    { label: 'Mi método de estudio', link: '#', badge: { text: 'Próximamente', variant: 'caution' } },
+                    { label: 'Los 10 errores del EX200', link: '#', badge: { text: 'Próximamente', variant: 'caution' } },
+                    { label: 'Script de laboratorio', link: '#', badge: { text: 'Próximamente', variant: 'caution' } },
+                  ],
+                },
               ],
             },
           ],
@@ -70,9 +121,13 @@ export default defineConfig({
         },
         {
           label: 'SysAdmin Toolkit',
-          badge: { text: 'Próximamente', variant: 'caution' },
           items: [
-            { label: 'Próximamente...', link: '#' },
+            {
+              label: 'Monitorización',
+              items: [
+                { label: 'Adagios — Nagios y NRPE', slug: 'toolkit/monitorizacion/adagios-nagios-nrpe' },
+              ],
+            },
           ],
         },
       ],

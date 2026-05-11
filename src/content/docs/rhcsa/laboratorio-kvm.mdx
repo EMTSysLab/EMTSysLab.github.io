@@ -1,0 +1,517 @@
+---
+title: "Laboratorio RHCSA: monta tu entorno de práctica sin suscripción"
+description: "Configura un laboratorio con RHEL 10 o Rocky Linux usando KVM en Linux, UTM en macOS o Hyper-V en Windows. Sin coste, sin límite de horas."
+sidebar:
+  label: "Laboratorio de práctica"
+  order: 3
+---
+
+![Laboratorio RHCSA — Monta tu entorno sin suscripción](/rhcsa-lab-create.png)
+
+
+import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
+
+## Necesitas un laboratorio propio
+
+No hay forma de preparar el EX200 sin practicar en un entorno real. Los simuladores online, los resúmenes y los vídeos ayudan, pero el examen es práctico: o ejecutas los comandos correctos sobre un sistema que responde, o no los ejecutas.
+
+Un laboratorio local te da exactamente eso: máquinas virtuales que puedes romper, restaurar con un snapshot y volver a romper. Sin coste mensual, sin límite de horas, sin depender de la conexión a internet.
+
+---
+
+## Qué sistema operativo instalar en la VM
+
+Independientemente de tu sistema host, la VM donde vas a practicar va a ser RHEL 10 o Rocky Linux.
+
+**RHEL 10 con la suscripción de desarrollador.** Red Hat ofrece una suscripción gratuita para desarrolladores individuales que cubre hasta 16 sistemas RHEL. Es una suscripción real, con acceso a los repositorios oficiales y actualizaciones de seguridad. Para practicar el examen es la opción más fiel porque el entorno del EX200 corre sobre RHEL.
+
+Registro en [developers.redhat.com](https://developers.redhat.com). La cuenta es gratuita y tarda cinco minutos.
+
+**Rocky Linux 10.** Compatible binario con RHEL, completamente gratuito, sin registro. Si no quieres crear una cuenta en Red Hat o quieres tener el laboratorio listo ya, Rocky es la alternativa correcta. Los comandos, la estructura del sistema y el comportamiento de los servicios son idénticos a RHEL en todo lo que cubre el EX200.
+
+Mi recomendación: si tienes fecha de examen definida, usa RHEL 10. La fidelidad al entorno real tiene valor. Si estás en fase de aprendizaje sin fecha concreta, Rocky funciona igual de bien.
+
+---
+
+## Qué hipervisor usar según tu sistema
+
+El hipervisor es el software que crea y gestiona las VMs. Cada plataforma tiene su opción recomendada:
+
+| Sistema host | Hipervisor recomendado | Coste |
+|---|---|---|
+| Linux | KVM + libvirt | Gratis |
+| macOS (Intel y Apple Silicon) | UTM | Gratis |
+| Windows 10/11 Pro o Enterprise | Hyper-V | Incluido en el SO |
+| Windows 10/11 Home | VirtualBox | Gratis |
+
+<Aside type="tip" title="KVM no es exclusivo de Linux como guest">
+KVM solo funciona en hosts Linux, pero las VMs que creas dentro pueden ejecutar cualquier SO. Lo mismo aplica a UTM y Hyper-V: el host es tu máquina, el guest es donde vas a practicar RHEL.
+</Aside>
+
+---
+
+## Requisitos del host
+
+Antes de instalar nada, verifica que tu máquina cumple los mínimos:
+
+- **CPU**: con soporte de virtualización por hardware (Intel VT-x o AMD-V en x86; en Apple Silicon está siempre activado)
+- **RAM**: 8 GB mínimo razonable — 4 GB para el host, 2 GB para la VM, algo de margen
+- **Disco**: 50 GB libres
+
+<Tabs>
+<TabItem label="Linux">
+
+Verifica que la CPU soporta virtualización:
+
+```bash
+grep -Ec '(vmx|svm)' /proc/cpuinfo
+```
+
+Si el resultado es 0, la virtualización está desactivada en la BIOS/UEFI. Búscala como *Intel VT-x*, *AMD-V* o *SVM Mode* y actívala.
+
+</TabItem>
+<TabItem label="macOS">
+
+En Intel, verifica desde la terminal:
+
+```bash
+sysctl -a | grep -E "vmx|machdep.cpu.features"
+```
+
+Si ves `VMX` en la salida, la virtualización está disponible.
+
+En Apple Silicon (M1/M2/M3/M4) no tienes que verificar nada — el hipervisor de Apple está siempre disponible y UTM lo usa directamente.
+
+</TabItem>
+<TabItem label="Windows">
+
+Abre PowerShell y ejecuta:
+
+```powershell
+Get-ComputerInfo -Property HyperVisorPresent, HyperVRequirementVirtualizationFirmwareEnabled
+```
+
+Si `HyperVRequirementVirtualizationFirmwareEnabled` devuelve `False`, entra en la BIOS/UEFI y activa la virtualización por hardware.
+
+Para Hyper-V también necesitas Windows 10/11 Pro, Enterprise o Education. La versión Home no incluye Hyper-V — en ese caso usa VirtualBox.
+
+</TabItem>
+</Tabs>
+
+---
+
+## Instalar el hipervisor
+
+<Tabs>
+<TabItem label="Linux — KVM">
+
+```bash
+# En RHEL 10 / Rocky 10
+sudo dnf install -y qemu-kvm libvirt virt-install virt-manager bridge-utils
+
+# En Ubuntu / Debian
+sudo apt install -y qemu-kvm libvirt-daemon-system virt-manager virtinst bridge-utils
+```
+
+Habilita el servicio y añade tu usuario al grupo `libvirt`:
+
+```bash
+sudo systemctl enable --now libvirtd
+sudo usermod -aG libvirt $(whoami)
+newgrp libvirt
+```
+
+Verifica que KVM está operativo:
+
+```bash
+sudo virsh list --all
+```
+
+</TabItem>
+<TabItem label="macOS — UTM">
+
+Descarga UTM desde [mac.getutm.app](https://mac.getutm.app) o desde la App Store (la versión web es gratuita, la de App Store cuesta unos euros y financia el desarrollo).
+
+No hay nada más que instalar. UTM incluye QEMU y el hipervisor de Apple. Ábrelo y ya puedes crear VMs.
+
+<Aside type="tip" title="Apple Silicon">
+En Macs con chip M1 o posterior, UTM usa la API de virtualización de Apple, que es mucho más eficiente que emulación pura. RHEL 10 y Rocky Linux tienen imágenes nativas para ARM64 — úsalas si tu Mac es Apple Silicon. El rendimiento es significativamente mejor que emular x86.
+</Aside>
+
+</TabItem>
+<TabItem label="Windows — Hyper-V">
+
+Hyper-V viene incluido en Windows Pro y Enterprise pero hay que activarlo:
+
+```powershell
+# En PowerShell como administrador
+Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
+```
+
+Reinicia cuando te lo pida. Después abre **Administrador de Hyper-V** desde el menú inicio.
+
+</TabItem>
+<TabItem label="Windows — VirtualBox">
+
+Descarga VirtualBox desde [virtualbox.org](https://www.virtualbox.org/wiki/Downloads). Instala también el **Extension Pack** de la misma página — añade soporte USB 3.0 y mejoras de rendimiento.
+
+No necesitas configuración adicional. Ábrelo y crea la VM desde la interfaz gráfica.
+
+</TabItem>
+</Tabs>
+
+---
+
+## Descargar la imagen ISO
+
+<Tabs>
+<TabItem label="RHEL 10">
+
+1. Accede a [console.redhat.com](https://console.redhat.com)
+2. Inicia sesión con tu cuenta de desarrollador
+3. Ve a **Downloads → Red Hat Enterprise Linux 10**
+4. Descarga el **DVD ISO** (la imagen completa, no el boot ISO)
+
+En Linux, mueve la ISO a un directorio accesible por libvirt:
+
+```bash
+sudo mv rhel-10*.iso /var/lib/libvirt/images/
+```
+
+En macOS y Windows puedes dejarla donde quieras — la referencias desde el asistente de creación de VM.
+
+</TabItem>
+<TabItem label="Rocky Linux 10">
+
+Descarga desde [rockylinux.org/download](https://rockylinux.org/download).
+
+- Para hosts **x86_64** (Intel/AMD en Linux y Windows): descarga el DVD ISO x86_64
+- Para hosts **Apple Silicon**: descarga el DVD ISO aarch64
+
+En Linux también puedes descargarlo directamente:
+
+```bash
+wget https://download.rockylinux.org/pub/rocky/10/isos/x86_64/Rocky-10-latest-x86_64-dvd.iso \
+  -O /var/lib/libvirt/images/rocky-10.iso
+```
+
+</TabItem>
+</Tabs>
+
+---
+
+## Crear la máquina virtual
+
+Para el laboratorio del RHCSA necesitas al menos dos discos virtuales: el del sistema y un disco adicional para practicar particionado, LVM y Stratis sin tocar el sistema base.
+
+<Tabs>
+<TabItem label="Linux — KVM">
+
+Crea los discos virtuales:
+
+```bash
+sudo qemu-img create -f qcow2 /var/lib/libvirt/images/rhcsa-lab.qcow2 20G
+sudo qemu-img create -f qcow2 /var/lib/libvirt/images/rhcsa-lab-disco2.qcow2 10G
+```
+
+Crea la VM con `virt-install`:
+
+```bash
+sudo virt-install \
+  --name rhcsa-lab \
+  --ram 2048 \
+  --vcpus 2 \
+  --disk path=/var/lib/libvirt/images/rhcsa-lab.qcow2,format=qcow2 \
+  --disk path=/var/lib/libvirt/images/rhcsa-lab-disco2.qcow2,format=qcow2 \
+  --cdrom /var/lib/libvirt/images/rocky-10.iso \
+  --os-variant rocky9.0 \
+  --network network=default \
+  --graphics vnc \
+  --noautoconsole
+```
+
+Cambia `--cdrom` a la ruta de tu ISO y `--os-variant` a `rhel10.0` si usas RHEL.
+
+Abre `virt-manager` para seguir la instalación gráfica, o conéctate por VNC al puerto que libvirt asigne.
+
+</TabItem>
+<TabItem label="macOS — UTM">
+
+1. Abre UTM y pulsa **+** para crear una nueva VM
+2. Selecciona **Virtualize** (no Emulate) si tu Mac es Intel o Apple Silicon con ISO nativa ARM64
+3. Selecciona **Linux** como sistema operativo
+4. Elige la ISO descargada en el paso anterior
+5. Asigna **2048 MB de RAM** y **2 núcleos de CPU**
+6. Crea el disco principal de **20 GB**
+
+Para el segundo disco:
+- Una vez creada la VM, abre su configuración
+- Ve a **Drives** y añade un nuevo disco IDE/VirtIO de **10 GB**
+
+Arranca la VM y sigue el asistente de instalación de Anaconda.
+
+</TabItem>
+<TabItem label="Windows — Hyper-V">
+
+Abre el **Administrador de Hyper-V** y sigue estos pasos:
+
+1. **Acción → Nuevo → Máquina Virtual**
+2. Nombre: `rhcsa-lab`
+3. Generación: **Generación 2** (UEFI, recomendado para RHEL 10)
+4. Memoria: **2048 MB**, sin memoria dinámica
+5. Red: selecciona el switch virtual por defecto
+6. Disco: **20 GB** (nuevo disco virtual)
+7. Instalación: selecciona la ISO descargada
+
+Para el segundo disco, una vez creada la VM:
+- Clic derecho sobre la VM → **Configuración → Controladora SCSI → Disco duro → Agregar**
+- Crea un nuevo disco de **10 GB**
+
+<Aside type="caution" title="Secure Boot en Hyper-V">
+Hyper-V Generación 2 activa Secure Boot por defecto con una plantilla de Microsoft que bloquea Linux. Ve a **Firmware** en la configuración de la VM y cambia la plantilla a **Microsoft UEFI Certificate Authority**, o desactiva Secure Boot directamente.
+</Aside>
+
+</TabItem>
+<TabItem label="Windows — VirtualBox">
+
+1. Abre VirtualBox y pulsa **Nueva**
+2. Nombre: `rhcsa-lab`, Tipo: **Linux**, Versión: **Red Hat (64-bit)**
+3. RAM: **2048 MB**
+4. Disco duro: **crear un disco virtual nuevo**, tipo VDI, tamaño dinámico, **20 GB**
+
+Para el segundo disco:
+- Selecciona la VM → **Configuración → Almacenamiento**
+- Añade un segundo controlador con un disco de **10 GB**
+
+Monta la ISO en el controlador óptico y arranca.
+
+</TabItem>
+</Tabs>
+
+### Opciones de instalación en Anaconda
+
+Durante el asistente de instalación, independientemente del hipervisor:
+
+- **Destino de instalación**: disco de 20 GB, particionado automático
+- **Entorno base**: *Minimal Install* — sin entorno gráfico, igual que un servidor real
+- **Red**: activa la interfaz durante la instalación
+- **Contraseña de root**: ponla
+- **Usuario adicional**: crea uno con privilegios de administrador
+
+---
+
+## Configurar acceso SSH desde tu máquina
+
+Una vez instalada la VM, el método de acceso preferido es SSH desde tu máquina. Más cómodo que la consola del hipervisor y más fiel al entorno real de trabajo.
+
+Primero localiza la IP de la VM:
+
+<Tabs>
+<TabItem label="Linux — KVM">
+
+```bash
+sudo virsh domifaddr rhcsa-lab
+```
+
+</TabItem>
+<TabItem label="macOS — UTM">
+
+Dentro de la VM ejecuta:
+
+```bash
+ip addr show
+```
+
+UTM usa NAT por defecto: la VM tiene IP en el rango `192.168.64.x`.
+
+</TabItem>
+<TabItem label="Windows — Hyper-V / VirtualBox">
+
+Dentro de la VM ejecuta:
+
+```bash
+ip addr show
+```
+
+O desde PowerShell en el host:
+
+```powershell
+# Hyper-V
+Get-VMNetworkAdapter -VMName rhcsa-lab | Select-Object IPAddresses
+```
+
+</TabItem>
+</Tabs>
+
+Configura un alias en `~/.ssh/config` (en Windows: `C:\Users\tuusuario\.ssh\config`) para no escribir la IP cada vez:
+
+```
+Host lab
+    HostName 192.168.X.X
+    User tu-usuario
+    IdentityFile ~/.ssh/id_ed25519
+```
+
+A partir de ahí, desde cualquier terminal:
+
+```bash
+ssh lab
+```
+
+---
+
+## Snapshots: rompe y restaura
+
+Si solo hay una cosa que justifica montar el laboratorio en una VM en lugar de una máquina física, son los snapshots. Rompes algo, restauras, y sigues. Sin reinstalar, sin perder media hora deshaciendo cambios a mano.
+
+Crea un snapshot limpio justo después de la instalación:
+
+<Tabs>
+<TabItem label="Linux — KVM">
+
+```bash
+sudo virsh snapshot-create-as rhcsa-lab \
+  --name "instalacion-limpia" \
+  --description "RHEL 10 recién instalado, sin configuración"
+
+# Listar snapshots
+sudo virsh snapshot-list rhcsa-lab
+
+# Restaurar
+sudo virsh shutdown rhcsa-lab
+sudo virsh snapshot-revert rhcsa-lab instalacion-limpia
+sudo virsh start rhcsa-lab
+```
+
+</TabItem>
+<TabItem label="macOS — UTM">
+
+Con la VM apagada, en UTM:
+
+1. Clic derecho sobre la VM → **Snapshot**
+2. Dale un nombre descriptivo: `instalacion-limpia`
+
+Para restaurar: clic derecho → **Restore Snapshot** y selecciona el que quieras.
+
+</TabItem>
+<TabItem label="Windows — Hyper-V">
+
+```powershell
+# Crear checkpoint (equivalente a snapshot en Hyper-V)
+Checkpoint-VM -Name "rhcsa-lab" -SnapshotName "instalacion-limpia"
+
+# Listar checkpoints
+Get-VMSnapshot -VMName "rhcsa-lab"
+
+# Restaurar
+Restore-VMSnapshot -Name "instalacion-limpia" -VMName "rhcsa-lab" -Confirm:$false
+Start-VM -Name "rhcsa-lab"
+```
+
+O desde el Administrador de Hyper-V con clic derecho sobre la VM.
+
+</TabItem>
+<TabItem label="Windows — VirtualBox">
+
+Con la VM apagada, ve a **Máquina → Tomar instantánea**. Dale el nombre `instalacion-limpia`.
+
+Para restaurar: en el panel de la VM, selecciona la instantánea y pulsa **Restaurar**.
+
+</TabItem>
+</Tabs>
+
+<Aside type="tip" title="Flujo de trabajo recomendado">
+Crea un snapshot antes de cada bloque de práctica. Si estás trabajando con LVM y dejas el sistema en un estado inconsistente, restauras y empiezas desde cero en treinta segundos.
+</Aside>
+
+---
+
+## Gestionar la VM en el día a día
+
+<Tabs>
+<TabItem label="Linux — KVM">
+
+```bash
+sudo virsh start rhcsa-lab       # encender
+sudo virsh shutdown rhcsa-lab    # apagar limpiamente
+sudo virsh destroy rhcsa-lab     # apagado forzado
+sudo virsh list --all            # ver estado
+sudo virsh console rhcsa-lab     # consola de emergencia (Ctrl+] para salir)
+```
+
+La consola con `virsh console` es el salvavidas cuando la red no responde o cuando practicas configuración de red y pierdes el acceso SSH.
+
+</TabItem>
+<TabItem label="macOS — UTM">
+
+Desde la interfaz de UTM: botones de encender, pausar y apagar en la barra lateral.
+
+Para acceso de emergencia sin red, usa la ventana de consola que UTM abre al arrancar la VM.
+
+</TabItem>
+<TabItem label="Windows — Hyper-V">
+
+```powershell
+Start-VM -Name "rhcsa-lab"
+Stop-VM -Name "rhcsa-lab"
+Stop-VM -Name "rhcsa-lab" -Force   # apagado forzado
+Get-VM -Name "rhcsa-lab"           # ver estado
+```
+
+Para acceso de emergencia usa **Conexión de VM** desde el Administrador de Hyper-V — abre una consola directa sin depender de la red.
+
+</TabItem>
+<TabItem label="Windows — VirtualBox">
+
+Desde la interfaz gráfica o con VBoxManage:
+
+```powershell
+VBoxManage startvm "rhcsa-lab" --type headless
+VBoxManage controlvm "rhcsa-lab" acpipowerbutton   # apagado limpio
+VBoxManage controlvm "rhcsa-lab" poweroff           # apagado forzado
+```
+
+</TabItem>
+</Tabs>
+
+---
+
+## Registro de RHEL con la suscripción de desarrollador
+
+Si usas RHEL 10, registra el sistema dentro de la VM para acceder a los repositorios:
+
+```bash
+sudo subscription-manager register \
+  --username tu-usuario-redhat \
+  --password tu-contraseña
+
+sudo subscription-manager attach --auto
+
+# Verificar repositorios activos
+sudo dnf repolist
+```
+
+Deberías ver `rhel-10-for-x86_64-baseos-rpms` y `rhel-10-for-x86_64-appstream-rpms` como mínimo.
+
+<Aside type="caution" title="Límite de 16 sistemas">
+La suscripción de desarrollador cubre hasta 16 sistemas registrados simultáneamente. Si tienes VMs antiguas que ya no usas, libéralas:
+
+```bash
+sudo subscription-manager unregister
+```
+</Aside>
+
+---
+
+## Estructura recomendada
+
+Para cubrir todos los objetivos del EX200, con una sola VM es suficiente para empezar. Cuando llegues a los bloques de red y servicios, necesitarás dos:
+
+| VM | Función | RAM | Disco |
+|----|---------|-----|-------|
+| `rhcsa-lab` | Sistema principal de práctica | 2 GB | 20 GB + 10 GB extra |
+| `rhcsa-cliente` | Segunda VM para NFS, SSH entre hosts, etc. | 1 GB | 15 GB |
+
+No hace falta tener las dos desde el principio. Crea la segunda cuando llegues a los temas de red.
+
+Con esto el laboratorio está listo. El siguiente artículo cubre los comandos esenciales que el examen da por sabidos desde el primer minuto: navegación, redirección, búsqueda de ficheros y expresiones regulares básicas.
