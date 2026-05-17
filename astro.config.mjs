@@ -20,6 +20,7 @@ export default defineConfig({
       components: {
         Hero: './src/components/HeroTerminal.astro',
         Head: './src/components/Head.astro',
+	Footer: './src/components/CustomFooter.astro',
       },
       plugins: [
         catppuccin({ defaultFlavour: 'mocha' }),

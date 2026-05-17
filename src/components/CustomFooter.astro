@@ -1,0 +1,8 @@
+---
+// CustomFooter.astro - Footer personalizado que incluye el banner de apoyo
+import Default from '@astrojs/starlight/components/Footer.astro';
+import SupportBanner from './SupportBanner.astro';
+---
+
+<SupportBanner />
+<Default {...Astro.props} />

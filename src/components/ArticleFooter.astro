@@ -1,0 +1,108 @@
+---
+// ArticleFooter.astro - CTA de apoyo para final de artículos
+---
+<div class="article-support">
+  <hr />
+  <div class="support-box">
+    <h4>💙 Apoya el contenido</h4>
+    <p>Si este artículo te ahorró horas de troubleshooting o te ayudó a resolver un problema, considera apoyar EMTSysLab:</p>
+    <div class="support-actions">
+      <a href="https://ko-fi.com/emtsyslab" class="ko-fi-btn" target="_blank" rel="noopener">
+        ☕ Invítame un café
+      </a>
+      <a href="https://www.linkedin.com/in/elihu-mt" class="linkedin-btn" target="_blank" rel="noopener">
+        📢 Compartir en LinkedIn
+      </a>
+    </div>
+    <p class="support-note">Cada aporte me ayuda a seguir documentando soluciones probadas en entornos enterprise.</p>
+  </div>
+</div>
+
+<style>
+  .article-support {
+    margin-top: 3rem;
+  }
+  
+  .article-support hr {
+    border: none;
+    border-top: 1px solid var(--sl-color-gray-5);
+    margin: 2rem 0 1.5rem 0;
+  }
+  
+  .support-box {
+    background: linear-gradient(135deg, rgba(137, 180, 250, 0.1), rgba(203, 166, 247, 0.1));
+    border: 1px solid var(--sl-color-accent);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  
+  .support-box h4 {
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    color: var(--sl-color-white);
+    font-size: 1.25rem;
+  }
+  
+  .support-box p {
+    color: var(--sl-color-gray-2);
+    margin-bottom: 1.25rem;
+    line-height: 1.6;
+  }
+  
+  .support-note {
+    font-size: 0.875rem;
+    margin-top: 1rem;
+    margin-bottom: 0;
+    font-style: italic;
+    color: var(--sl-color-gray-3);
+  }
+  
+  .support-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .ko-fi-btn, .linkedin-btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-weight: 600;
+    transition: transform 0.2s, box-shadow 0.2s;
+    font-size: 0.95rem;
+  }
+  
+  .ko-fi-btn {
+    background: #FF5E5B;
+    color: white;
+  }
+  
+  .linkedin-btn {
+    background: #0A66C2;
+    color: white;
+  }
+  
+  .ko-fi-btn:hover, .linkedin-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  
+  @media (max-width: 640px) {
+    .support-box {
+      padding: 1.25rem;
+    }
+    
+    .support-actions {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    
+    .ko-fi-btn, .linkedin-btn {
+      width: 100%;
+    }
+  }
+</style>
