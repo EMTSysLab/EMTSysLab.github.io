@@ -1,0 +1,167 @@
+---
+title: K8s Games — aprende Kubernetes jugando en el navegador
+description: Análisis y guía de K8s Games, un simulador 3D de Kubernetes que corre en el navegador. Practica kubectl, resuelve incidentes reales y diseña arquitecturas sin instalar nada.
+sidebar:
+  label: K8s Games — practica sin clúster
+  order: 1
+---
+
+![K8s Games — Aprende Kubernetes jugando](/k8sgames.png)
+
+
+import { Aside, Card, CardGrid } from '@astrojs/starlight/components';
+
+Antes de montar un clúster Kubernetes en producción, o incluso antes de preparar la certificación CKA, necesitas practicar con comandos reales en un entorno donde equivocarte no tenga consecuencias.
+
+K8s Games es exactamente eso: un simulador 3D de Kubernetes que corre en el navegador, sin instalar nada, sin registrarse, sin montar ningún clúster.
+
+<Aside type='tip' title='Sin instalación'>
+Abre el navegador, ve a k8sgames.com y empieza. No necesitas kubectl instalado, ni minikube, ni ningún clúster real.
+</Aside>
+
+---
+
+## Qué es K8s Games
+
+K8s Games es un simulador open source de Kubernetes en 3D construido con Three.js. Simula un clúster real con sus recursos, sus relaciones y sus fallos más comunes.
+
+Lo que lo hace diferente de otros recursos de aprendizaje:
+
+- Escribes comandos `kubectl` reales con autocompletado
+- Los incidentes que aparecen son los que te encontrarás en producción real
+- Puedes ver visualmente cómo se relacionan los recursos entre sí
+- El modo sandbox te puntúa tu arquitectura en HA, seguridad y escalabilidad
+
+---
+
+## Los 5 modos de juego
+
+<CardGrid>
+  <Card title='Campaign — 20 niveles' icon='rocket'>
+    Progresión desde pods básicos hasta producción. 5 capítulos que cubren pods, deployments, networking, storage y producción K8s. El camino recomendado para empezar.
+  </Card>
+  <Card title='Chaos Mode' icon='warning'>
+    Incidentes que escalan sin parar hasta que tu clúster cae. Entrenamiento SRE en condiciones reales. Mide cuánto aguantas.
+  </Card>
+  <Card title='Sandbox' icon='setting'>
+    Construcción libre. Diseña cualquier arquitectura y recibe una puntuación de 0 a 100 del Architecture Advisor en HA, seguridad, escalabilidad y coste.
+  </Card>
+  <Card title='Challenges — 10 escenarios' icon='clock'>
+    Escenarios cronometrados. Despliega aplicaciones, resuelve cortes, compite contra el reloj.
+  </Card>
+</CardGrid>
+
+---
+
+## K8s Draw — arquitecturas en 3D
+
+Además del simulador, K8s Games incluye una herramienta de diagramas en 3D disponible en `k8sgames.com/draw`.
+
+Con ella puedes:
+
+- Arrastrar 21 tipos de recursos Kubernetes sobre un canvas 3D
+- Dibujar conexiones entre recursos
+- Exportar como YAML con los `apiVersions` correctos o como PNG
+- Compartir el diagrama vía URL
+
+Es útil para diseñar arquitecturas antes de implementarlas o para documentar entornos existentes.
+
+---
+
+## Los incidentes que practica
+
+K8s Games simula 29 tipos de incidentes reales. Estos son los más relevantes para un sysadmin:
+
+| Incidente | Qué practicas |
+|---|---|
+| `CrashLoopBackOff` | Diagnóstico con `kubectl logs` y `describe` |
+| `OOMKilled` | Gestión de resource limits |
+| `ImagePullBackOff` | Problemas de registry y credenciales |
+| Node `NotReady` | Troubleshooting de nodos |
+| DNS failures | Diagnóstico de red interna |
+| PVC pending | Gestión de almacenamiento persistente |
+| Rollout stuck | Gestión de deployments |
+| Certificate expiry | Gestión de certificados |
+| HPA flapping | Autoescalado mal configurado |
+
+---
+
+## Comandos kubectl que puedes practicar
+
+La barra de comandos `/` acepta comandos reales con autocompletado:
+
+```bash
+# Inspeccionar recursos
+kubectl get pods
+kubectl get pods -o wide
+kubectl describe deployment nginx
+kubectl describe pod nginx-abc123
+
+# Ver logs
+kubectl logs pod-1
+kubectl logs pod-1 --previous
+
+# Escalar
+kubectl scale deployment nginx --replicas=3
+
+# Ver estado de un rollout
+kubectl rollout status deployment nginx
+
+# Drenar un nodo
+kubectl drain node-1
+```
+
+---
+
+## Mi experiencia probándolo
+
+<Aside type='note' title='Diario de progreso'>
+Esta sección se irá actualizando a medida que avance en los diferentes modos. La primera sesión fue con el modo Campaign.
+</Aside>
+
+### Sesión 1 — Campaign, primeros niveles
+
+El modo Campaign empieza desde cero: crear un Pod, entender su ciclo de vida, ver cómo un Deployment gestiona ReplicaSets. Para alguien que conoce Linux pero no Kubernetes, el ritmo es el correcto.
+
+Lo que más me sorprendió es que los comandos `kubectl` funcionan exactamente igual que en un clúster real. No es una simulación simplificada — es la misma sintaxis, los mismos flags, los mismos mensajes de error.
+
+El primer incidente real apareció en el nivel 4: un `CrashLoopBackOff` que había que diagnosticar con `kubectl logs` y `kubectl describe`. El proceso es idéntico al que harías en producción.
+
+**Puntuación del modo Sandbox en la primera arquitectura:**
+
+```
+Alta Disponibilidad:  72/100
+Seguridad:           45/100  ← sin NetworkPolicy ni RBAC
+Escalabilidad:       80/100
+Coste:               90/100
+Puntuación global:   71/100
+```
+
+---
+
+## Valoración
+
+**Lo que funciona muy bien:**
+- Sin fricción — abres el navegador y empiezas
+- Los incidentes son reales y el proceso de diagnóstico es idéntico al de producción
+- El Architecture Advisor da feedback concreto y educativo
+- Proyecto activo con 700+ estrellas en GitHub
+
+**Lo que mejoraría:**
+- El modo Campaign podría tener más contexto teórico entre niveles
+- El Chaos Mode es muy exigente para alguien que empieza — mejor dejarlo para después del Campaign
+
+**¿Para quién es?**
+- Sysadmins que quieren aprender Kubernetes antes de montar un clúster real
+- Personas que preparan la CKA o CKAD
+- Equipos que quieren hacer onboarding de Kubernetes de forma práctica
+
+---
+
+## Conclusión práctica
+
+K8s Games es el recurso que me habría gustado tener cuando empecé con Kubernetes. Sin coste, sin instalación y con incidentes reales. Si estás en la sección Road to Cert preparando el RHCSA o pensando en la CKA, empieza por aquí antes de montar cualquier clúster.
+
+🎮 Juega en: https://k8sgames.com
+📐 Diseña arquitecturas en: https://k8sgames.com/draw
+⭐ GitHub: https://github.com/rohitg00/k8sgames

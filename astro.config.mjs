@@ -39,9 +39,13 @@ export default defineConfig({
         },
         {
           label: 'Kubernetes, Podman & Docker',
-          badge: { text: 'Próximamente', variant: 'caution' },
           items: [
-            { label: 'Próximamente...', link: '#' },
+            {
+              label: 'Recursos y práctica',
+              items: [
+                { label: 'K8s Games — practica sin clúster', slug: 'kubernetes/k8sgames-aprende-kubernetes', badge: { text: 'Nuevo', variant: 'tip' } },
+              ],
+            },
           ],
         },
         {
