@@ -561,7 +561,7 @@ Un sistema bien bastionado es aquel cuyo estado puedes verificar en menos de 5 m
 
 ### Referencias oficiales
 
-- [RHEL 10 — Esquema de particionado recomendado](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html-single/interactively_installing_rhel_from_installation_media/interactively_installing_rhel_from_installation_media#recommended-partitioning-scheme): puntos de montaje, dimensionamiento y consideraciones para instalaciones físicas.
+- [RHEL 10 — Esquema de particionado recomendado](https://docs.redhat.com/es/documentation/red_hat_enterprise_linux/10/pdf/interactively_installing_rhel_from_installation_media/index): puntos de montaje, dimensionamiento y consideraciones para instalaciones físicas.
 - [RHEL 10 — Administración de volúmenes físicos LVM](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html/configuring_and_managing_logical_volumes/managing-lvm-physical-volumes): inicialización y administración de PV.
 - [RHEL 10 — Administración de grupos de volúmenes](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html/configuring_and_managing_logical_volumes/managing-lvm-volume-groups): creación y ampliación de VG.
 - [RHEL 10 — Gestión básica de volúmenes lógicos](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html/configuring_and_managing_logical_volumes/basic-logical-volume-management): creación, ampliación y reducción de LV.
