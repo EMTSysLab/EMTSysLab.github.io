@@ -505,33 +505,32 @@ Cambiar de \`Permissive\` a \`Enforcing\` no implica necesariamente que haya que
 
 Este procedimiento requiere especial cuidado. Los archivos creados mientras SELinux estaba deshabilitado pueden no disponer de las etiquetas adecuadas. Activar directamente \`Enforcing\` sin restaurar los contextos puede impedir el funcionamiento correcto de servicios.
 
-Procedimiento general:
+Procedimiento general recomendado por Red Hat:
 
-1. Comprobar el estado actual, la configuración y las copias de seguridad.
-2. Configurar SELinux en modo \`Permissive\` y seleccionar la política correspondiente.
-3. Programar una restauración completa de las etiquetas.
-4. Reiniciar y permitir que finalice el relabel.
-5. Revisar los registros y las incidencias detectadas.
-6. Cambiar a \`Enforcing\` cuando se haya validado el resultado.
-
-En RHEL puede programarse la restauración de etiquetas durante el siguiente arranque con:
+1. Configurar SELinux en modo `Permissive` en `/etc/selinux/config` y mantener `SELINUXTYPE=targeted`, salvo que el entorno requiera otra política.
+2. Reiniciar el sistema para que arranque en modo permisivo.
+3. Comprobar los eventos AVC y resolver las incidencias de etiquetado o configuración que puedan identificarse.
+4. Como root y mientras SELinux sigue en modo permisivo, programar la restauración completa de etiquetas:
 
 ~~~bash
 fixfiles -F onboot
 ~~~
 
-En escenarios de activación desde un sistema previamente deshabilitado, debe seguirse el procedimiento de Red Hat para garantizar que el primer arranque de relabel se realiza en modo permisivo. No se debe improvisar con parámetros del kernel ni forzar \`Enforcing\` antes de completar la restauración.
+Este comando crea `/.autorelabel` y fuerza la restauración de etiquetas durante el siguiente arranque. Red Hat indica que se debe estar en modo permisivo antes de ejecutar `fixfiles -F onboot`.
 
-El relabel puede prolongar el arranque en función del número de archivos y del almacenamiento. Debe realizarse durante una ventana de mantenimiento, con acceso a consola y un procedimiento de recuperación.
-
-Después del arranque, comprobar:
+5. Antes del reinicio de relabel, garantizar que el sistema arranque en modo permisivo. Puede utilizarse temporalmente el parámetro de kernel `enforcing=0` siguiendo el procedimiento de administración del cargador de arranque.
+6. Reiniciar y permitir que termine la restauración.
+7. Una vez iniciado el sistema, comprobar el estado, revisar los registros y verificar los servicios.
+8. Si no quedan incidencias que impidan aplicar la política, configurar `SELINUX=enforcing`, reiniciar cuando corresponda y verificar el modo.
 
 ~~~bash
-sestatus
 getenforce
+sestatus
 ~~~
 
-Si la restauración se ha completado y el sistema funciona correctamente, configurar finalmente \`SELINUX=enforcing\`, reiniciar si es necesario y volver a verificar el estado.
+No debe utilizarse el parámetro `selinux=0` como método de diagnóstico en producción: desactiva la infraestructura SELinux durante el arranque. Para investigar problemas debe preferirse el modo permisivo.
+
+El relabel puede prolongar el arranque en función del número de archivos y del almacenamiento. Debe realizarse durante una ventana de mantenimiento, con acceso a consola, copia de seguridad y procedimiento de recuperación.
 
 ### 2.4. Administración de contextos SELinux
 
@@ -745,8 +744,40 @@ ausearch -m AVC,USER_AVC -ts today
 Para ampliar la consulta a otros mensajes de SELinux:
 
 ~~~bash
-ausearch -m AVC,USER_AVC,SELINUX_ERR,USER_SELINUX_ERR -ts today
+ausearch -m AVC,USER_AVC,SELINUX_ERR,USER_SELINUX_ERR -ts recent
 ~~~
+
+Si no aparecen eventos, comprobar que el servicio de auditoría está activo:
+
+~~~bash
+systemctl status auditd
+~~~
+
+Si `auditd` está activo y no se encuentran mensajes, consultar los eventos de `setroubleshoot` en el journal:
+
+~~~bash
+journalctl -t setroubleshoot
+~~~
+
+Si SELinux está activo pero el demonio de auditoría no se está ejecutando, revisar los mensajes del kernel:
+
+~~~bash
+dmesg | grep -i -e type=1300 -e type=1400
+~~~
+
+En determinadas situaciones, las reglas `dontaudit` pueden evitar que algunas denegaciones se registren. Solo durante un diagnóstico controlado, se pueden desactivar temporalmente para que se registren más eventos:
+
+~~~bash
+semodule -DB
+~~~
+
+Reproducir la operación que falla y volver a consultar los registros. Al terminar, restaurar siempre el comportamiento normal de la política:
+
+~~~bash
+semodule -B
+~~~
+
+Esta operación puede generar un volumen elevado de eventos y no debe dejarse aplicada de forma permanente.
 
 Los eventos pueden proporcionar información sobre:
 
