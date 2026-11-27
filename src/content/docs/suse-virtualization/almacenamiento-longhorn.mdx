@@ -25,24 +25,24 @@ Las réplicas mejoran la disponibilidad frente al fallo de un nodo o disco, seg�
 
 Consultar las clases de almacenamiento, las solicitudes y los volúmenes:
 
-\`\`\`bash
+```bash
 kubectl get storageclass
 kubectl get pvc -A -o wide
 kubectl get pv
 kubectl -n longhorn-system get volumes.longhorn.io -o wide
 kubectl -n longhorn-system get replicas.longhorn.io -o wide
 kubectl -n longhorn-system get nodes.longhorn.io
-\`\`\`
+```
 
 Para revisar un volumen concreto:
 
-\`\`\`bash
+```bash
 kubectl -n longhorn-system get volumes.longhorn.io <volume> -o yaml
 kubectl -n longhorn-system get replicas.longhorn.io -l longhornvolume=<volume> -o wide
 kubectl -n longhorn-system get events --sort-by=.lastTimestamp
-\`\`\`
+```
 
-Sustituye \`<volume>\` por el nombre del recurso Longhorn. Para relacionar un PVC con su volumen, consulta el campo \`VOLUME\` del PVC y comprueba también su \`storageClassName\`.
+Sustituye `<volume>` por el nombre del recurso Longhorn. Para relacionar un PVC con su volumen, consulta el campo `VOLUME` del PVC y comprueba también su `storageClassName`.
 
 ## Interpretación de estados
 
@@ -52,7 +52,7 @@ Sustituye \`<volume>\` por el nombre del recurso Longhorn. Para relacionar un PV
 - **degraded:** el volumen no dispone de todas las réplicas esperadas o presenta una condición que afecta a su redundancia.
 - **unknown:** Longhorn no puede determinar con normalidad el estado de robustez del volumen.
 
-Un volumen \`attached\` no tiene por qué estar \`healthy\`: puede estar disponible para la carga y, al mismo tiempo, tener menos réplicas activas de las configuradas. Del mismo modo, \`detached\` no significa necesariamente que los datos se hayan perdido.
+Un volumen `attached` no tiene por qué estar `healthy`: puede estar disponible para la carga y, al mismo tiempo, tener menos réplicas activas de las configuradas. Del mismo modo, `detached` no significa necesariamente que los datos se hayan perdido.
 
 ## Diagnóstico de planificación
 
@@ -62,7 +62,7 @@ Cuando Longhorn no puede crear una réplica, revisa:
 2. El estado de los nodos y si admiten nuevas cargas.
 3. La disponibilidad y capacidad de los discos configurados en Longhorn.
 4. Las etiquetas, selectores y reglas de distribución de réplicas.
-5. La condición \`Scheduled\`, su mensaje y los eventos relacionados.
+5. La condición `Scheduled`, su mensaje y los eventos relacionados.
 
 Los nodos pueden estar preparados para ejecutar cargas de Kubernetes y, aun así, no admitir nuevas réplicas si están acordonados o si Longhorn no los considera programables. También puede haber restricciones de disco o capacidad. Es importante distinguir entre el estado del nodo, el estado del disco y el estado de programación de Longhorn.
 
