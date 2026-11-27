@@ -1064,9 +1064,7 @@ SELinux es una de las capas fundamentales de seguridad de Red Hat Enterprise Lin
 
 Un sistema correctamente bastionado no se limita a mantener SELinux habilitado: también debe disponer de contextos adecuados, políticas coherentes, booleanos controlados y mecanismos de auditoría que permitan identificar y resolver las denegaciones.
 
-La regla fundamental es **corregir la causa de una denegación, no eliminar la protección que la provoca**.
-
-En producción, SELinux debe permanecer en modo \`Enforcing\`, y cualquier modificación de su política debe responder a una necesidad técnica justificada y seguir el principio de mínimo privilegio.
+La regla fundamental es **corregir la causa de una denegación, no eliminar la protección que la provoca**. En producción, SELinux debe permanecer en modo `Enforcing`, y cualquier modificación de su política debe responder a una necesidad técnica justificada y seguir el principio de mínimo privilegio.
 ---
 
 ## 3. Firewall con firewalld
