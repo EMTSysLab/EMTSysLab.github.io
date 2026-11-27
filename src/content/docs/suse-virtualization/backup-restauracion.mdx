@@ -1,64 +1,75 @@
 ---
 title: Backup y restauración de máquinas virtuales
-description: Diferencias entre snapshots, backups remotos, destinos Longhorn y restauraciones en Harvester.
+description: Conceptos, configuración e inspección de backups y restauraciones en SUSE Virtualization.
 ---
 
 # Backup y restauración de máquinas virtuales
 
-Una estrategia de protección de datos debe distinguir entre snapshots locales, backups almacenados fuera del clúster y restauraciones verificadas. No son mecanismos equivalentes.
+La protección de máquinas virtuales requiere disponer de copias recuperables y comprobar periódicamente que pueden restaurarse. Los snapshots locales, los backups remotos y las pruebas de recuperación cumplen funciones distintas.
 
-## Conceptos
+## Conceptos principales
 
-- **Snapshot:** punto de recuperación asociado al almacenamiento. Si permanece en el mismo clúster y dominio de fallo, no sustituye a una copia externa.
-- **VM Backup:** recurso de Harvester que registra la operación de backup de una máquina virtual y sus volúmenes compatibles.
-- **BackupTarget:** destino configurado para almacenar backups de Longhorn, por ejemplo un repositorio NFS o S3.
-- **ScheduleVMBackup:** política programada de backup de VM.
-- **Restore:** operación que crea o reemplaza una VM a partir de un backup disponible.
+- **Snapshot:** captura el estado de los volúmenes en un momento determinado. Si permanece en el mismo clúster o dominio de fallo, no sustituye a una copia externa.
+- **VM Backup:** recurso de SUSE Virtualization que representa una copia de una máquina virtual y de los volúmenes compatibles asociados.
+- **BackupTarget:** destino configurado para almacenar backups de Longhorn, como un almacenamiento NFS o un servicio compatible con S3.
+- **ScheduleVMBackup:** recurso que define una política para ejecutar backups de máquinas virtuales de forma periódica.
+- **Restore:** operación que recupera una máquina virtual o sus datos a partir de un backup disponible.
 
-La condición `ReadyToUse=True` indica que la API considera preparado el recurso de backup/snapshot. No acredita por sí sola que exista una copia externa, que sea independiente del clúster o que la aplicación pueda recuperarse correctamente.
+Un estado como `ReadyToUse=True` indica que el recurso está preparado según el controlador correspondiente. No demuestra por sí solo que exista una copia externa, que esta sea independiente del clúster ni que la aplicación pueda recuperarse correctamente.
 
-## Inspección de solo lectura
+## Inspección básica
+
+Los siguientes comandos permiten consultar los recursos de backup y restauración sin modificarlos:
 
 ```bash
 kubectl get virtualmachinebackups -A -o wide
 kubectl get schedulevmbackups -A -o wide
 kubectl get virtualmachinerestores -A -o wide
 
-kubectl -n longhorn-system get backuptargets.longhorn.io -o wide
-kubectl -n longhorn-system get backuptargets.longhorn.io default -o yaml
+kubectl -n longhorn-system get backuptargets.longhorn.io
+kubectl -n longhorn-system get backuptargets.longhorn.io <backup-target> -o yaml
+
 kubectl get volumeremotebackups -A -o wide
 kubectl get volumeremoterestores -A -o wide
 ```
 
-Al inspeccionar YAML completos, no publicarlos sin revisión. Los metadatos de VM pueden incorporar configuración cloud-init, claves SSH, hashes de credenciales y otros datos sensibles.
+Para investigar un recurso concreto:
 
-## Evidencia observada
+```bash
+kubectl describe virtualmachinebackup <backup> -n <namespace>
+kubectl describe virtualmachinerestore <restore> -n <namespace>
+```
 
-En el laboratorio del 27/11/2026:
+La disponibilidad del BackupTarget debe interpretarse junto con su URL, las credenciales configuradas y la presencia de backups en el destino. Un estado disponible no acredita por sí solo que la política de protección esté correctamente configurada.
 
-- `prod/pre-disaster-backup` era un recurso de backup de `core-services`, de tipo `snapshot`, con `ReadyToUse: true`.
-- Existía una restauración `prod/restore-webserver-prod-m75gm` cuyo destino era `VirtualMachine/webserver-prod` y que aparecía como `COMPLETE: true`.
-- No se encontraron recursos `ScheduleVMBackup`.
-- No se encontraron recursos `VolumeRemoteBackup` ni `VolumeRemoteRestore`.
-- El BackupTarget `longhorn-system/default` informaba `AVAILABLE: true`, pero su `backupTargetURL` y `credentialSecret` estaban vacíos.
+Al compartir manifiestos o salidas YAML, revisa y elimina previamente credenciales, secretos, claves SSH, configuración cloud-init y cualquier otro dato sensible.
 
-La lectura correcta es limitada: se observó un snapshot listo y una restauración registrada como completa, pero no se demostró un destino NFS/S3 configurado ni una programación de backups externos. El indicador Available del destino no reemplaza la comprobación de su URL, configuración y existencia de copias.
+## Buenas prácticas
 
-## Validación de recuperación
+1. Configurar un destino de backup adecuado y, cuando sea posible, independiente del clúster.
+2. Definir una política de retención y una frecuencia acorde con los objetivos de recuperación.
+3. Verificar que los backups finalizan correctamente y que aparecen en el destino esperado.
+4. Proteger las credenciales y limitar el acceso al almacenamiento de copias.
+5. Supervisar los errores de backup y restauración, así como la capacidad disponible en el destino.
+6. Documentar el procedimiento de recuperación y probarlo periódicamente.
 
-Una prueba de recuperación completa debería registrar, como mínimo:
+Los snapshots son útiles para operaciones de recuperación a corto plazo, pero no deben considerarse una estrategia de backup completa si comparten infraestructura y dominio de fallo con los datos originales.
 
-1. Identidad y fecha del backup seleccionado.
-2. Destino real y ubicación independiente del clúster.
-3. Resultado de la restauración y eventos asociados.
-4. Estado de la VM y de sus volúmenes.
-5. Arranque del sistema operativo invitado.
-6. Comprobaciones funcionales de la aplicación y consistencia de datos.
-7. Tiempo total de recuperación y punto de recuperación alcanzado.
+## Validación de una restauración
 
-No se midieron RPO ni RTO en este laboratorio. No se debe asignar una cifra sin resultados cronometrados y una prueba de pérdida de datos controlada.
+Una prueba de recuperación debe comprobar tanto el resultado de la operación como el funcionamiento del sistema restaurado:
+
+1. Identificar el backup y confirmar que está disponible.
+2. Verificar el destino desde el que se recuperarán los datos.
+3. Ejecutar la restauración siguiendo el procedimiento de la versión instalada.
+4. Revisar el estado del recurso de restauración y sus eventos.
+5. Comprobar el estado de la máquina virtual y de sus volúmenes.
+6. Confirmar que el sistema operativo invitado arranca y que la aplicación funciona.
+7. Verificar la integridad y consistencia de los datos recuperados.
+
+**RPO** (Recovery Point Objective) expresa la pérdida máxima de datos admisible, medida en tiempo. **RTO** (Recovery Time Objective) expresa el tiempo objetivo para recuperar el servicio. Ambos deben definirse según las necesidades del servicio y validarse mediante pruebas; no se pueden deducir únicamente del estado de los recursos de backup.
 
 ## Referencias
 
 - [SUSE Virtualization — Backup and Restore](https://documentation.suse.com/cloudnative/virtualization/latest/en/virtual-machines/backup-restore.html)
-- [Longhorn — Backup and Restore](https://longhorn.io/docs/)
+- [Longhorn — Documentation](https://longhorn.io/docs/)
