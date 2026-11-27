@@ -1,0 +1,44 @@
+---
+title: SUSE Virtualization — laboratorio práctico
+description: Arquitectura, almacenamiento, redes, ciclo de vida de máquinas virtuales y recuperación en un laboratorio Harvester 1.8.1.
+---
+
+# SUSE Virtualization: laboratorio práctico
+
+Esta serie reúne notas técnicas originales de un laboratorio temporal de SUSE Virtualization (Harvester) y Rancher Prime realizado el 27 de noviembre de 2026. El objetivo es explicar los componentes, documentar comandos de inspección y separar los resultados observados de las conclusiones que requieren pruebas adicionales.
+
+<Aside type="caution" title="Alcance de las evidencias">
+Los resultados descritos corresponden a un entorno de laboratorio efímero, no a una instalación de producción. Una condición de Kubernetes o un recurso presente en la API no demuestra por sí solo disponibilidad de la aplicación, resiliencia ante fallos ni recuperación de datos.
+</Aside>
+
+## Contenido de la serie
+
+- [Arquitectura y componentes](./arquitectura)
+- [Almacenamiento con Longhorn](./almacenamiento-longhorn)
+- [Backup y restauración de máquinas virtuales](./backup-restauracion)
+- [Redes y aislamiento](./redes)
+- [Plantillas, aprovisionamiento y migración](./maquinas-virtuales)
+
+## Entorno observado
+
+| Componente | Versión o dato |
+|---|---|
+| SUSE Virtualization / Harvester | 1.8.1 |
+| Kubernetes / RKE2 | v1.35.6+rke2r1 |
+| Longhorn Engine | v1.11.2 |
+| Nodos | harvester1, harvester2, harvester3 |
+| Fecha de captura | 27/11/2026 |
+
+El laboratorio tenía tres nodos. Los tres reportaban condición `Ready=True`; `harvester2` estaba acordonado (`SchedulingDisabled`) y no admitía nuevas cargas. No se modificó ese estado durante la captura final.
+
+## Método y límites
+
+Las evidencias se obtuvieron mediante consultas de solo lectura con `kubectl` y la API de Kubernetes/Harvester. Se omitieron credenciales, claves, hashes, kubeconfigs, support bundles y contenido de cloud-init.
+
+Los estados se documentan tal como los devolvió la API. Las hipótesis operativas se identifican como análisis y no como hechos demostrados. No se realizaron pruebas de pérdida de nodo, reconstrucción forzada de réplicas, validación de aplicación restaurada ni mediciones de RPO/RTO.
+
+## Referencias oficiales
+
+- [SUSE Virtualization — Overview](https://documentation.suse.com/cloudnative/virtualization/latest/en/introduction/overview.html)
+- [SUSE Virtualization — Requirements](https://documentation.suse.com/cloudnative/virtualization/latest/en/installation-setup/requirements.html)
+- [Kubernetes — Concepts](https://kubernetes.io/docs/concepts/overview/)
