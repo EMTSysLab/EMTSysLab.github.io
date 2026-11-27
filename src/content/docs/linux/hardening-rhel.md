@@ -561,4 +561,20 @@ Un sistema bien bastionado es aquel cuyo estado puedes verificar en menos de 5 m
 
 ### Referencias oficiales
 
-- [RHEL 10 — Esquema de particionado recomendado](https://docs.redhat.com/es/documentation/red_hat_enterprise_linux/10/pdf/interactively_installing_rhel_from_installation_media/index): puntos de montaje, dimensionamiento y consideraciones para instalaciones físicas.
+#### Instalación y particionado
+
+- [RHEL 10 — Instalación interactiva y planificación del almacenamiento](https://docs.redhat.com/es/documentation/red_hat_enterprise_linux/10/pdf/interactively_installing_rhel_from_installation_media/index) (español): puntos de montaje, dimensionamiento y consideraciones para instalaciones físicas.
+
+#### LVM
+
+Las siguientes páginas pertenecen a la documentación oficial de RHEL 10. Red Hat sirve estos contenidos en inglés, aunque se acceda mediante la ruta localizada /es/.
+
+- [RHEL 10 — Administración de volúmenes físicos LVM](https://docs.redhat.com/es/documentation/red_hat_enterprise_linux/10/html/configuring_and_managing_logical_volumes/managing-lvm-physical-volumes) (inglés).
+- [RHEL 10 — Administración de grupos de volúmenes LVM](https://docs.redhat.com/es/documentation/red_hat_enterprise_linux/10/html/configuring_and_managing_logical_volumes/managing-lvm-volume-groups) (inglés).
+- [RHEL 10 — Gestión básica de volúmenes lógicos](https://docs.redhat.com/es/documentation/red_hat_enterprise_linux/10/html/configuring_and_managing_logical_volumes/basic-logical-volume-management) (inglés).
+
+#### Sistemas de archivos y montaje
+
+- [RHEL 10 — Creación de un sistema de archivos XFS](https://docs.redhat.com/es/documentation/red_hat_enterprise_linux/10/html/managing_file_systems/creating-an-xfs-file-system) (inglés).
+- [RHEL 10 — Ampliación de un sistema de archivos XFS](https://docs.redhat.com/es/documentation/red_hat_enterprise_linux/10/html/managing_file_systems/increasing-the-size-of-an-xfs-file-system) (inglés).
+- [RHEL 10 — Montaje persistente de sistemas de archivos](https://docs.redhat.com/es/documentation/red_hat_enterprise_linux/10/html/managing_file_systems/persistently-mounting-file-systems) (inglés).
