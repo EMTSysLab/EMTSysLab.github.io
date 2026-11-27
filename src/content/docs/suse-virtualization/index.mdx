@@ -5,78 +5,108 @@ description: Guía formativa sobre arquitectura, almacenamiento, redes, máquina
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-![SUSE Virtualization — Formación práctica](/suse-virtualization-banner.png)
+<div style="max-width: 960px; margin-inline: auto;">
 
-Aprende a trabajar con **SUSE Virtualization (Harvester)** a través de una colección de guías prácticas. Explora su arquitectura, administra almacenamiento y redes, y descubre cómo desplegar y mantener máquinas virtuales.
+  <div style="text-align: center;">
 
-## Explora la formación
+    ![SUSE Virtualization — Formación práctica](/suse-virtualization-banner.png)
 
-### Fundamentos
+    Aprende a trabajar con **SUSE Virtualization (Harvester)** a través de una colección de guías prácticas. Explora su arquitectura, administra almacenamiento y redes, y descubre cómo desplegar y mantener máquinas virtuales.
 
-<CardGrid>
-  <Card title="Arquitectura y componentes" icon="puzzle" href="./arquitectura">
-    Conoce los componentes de la plataforma y su relación con Kubernetes.
-  </Card>
-</CardGrid>
+  </div>
 
-### Almacenamiento y protección
+  <h2 style="text-align: center;">Explora la formación</h2>
 
-<CardGrid>
-  <Card title="Almacenamiento con Longhorn" icon="setting" href="./almacenamiento-longhorn">
-    Volúmenes persistentes, réplicas, snapshots y almacenamiento distribuido.
-  </Card>
-  <Card title="Backup y restauración" icon="approve-check" href="./backup-restauracion">
-    Protege máquinas virtuales y aprende los conceptos de copia y recuperación.
-  </Card>
-</CardGrid>
+  <h3 style="text-align: center;">Fundamentos</h3>
 
-### Redes
+  <div style="max-width: 720px; margin-inline: auto;">
+    <CardGrid>
+      <Card title="Arquitectura y componentes" icon="puzzle" href="./arquitectura">
+        Conoce los componentes de la plataforma y su relación con Kubernetes.
+      </Card>
+    </CardGrid>
+  </div>
 
-<CardGrid>
-  <Card title="Redes y aislamiento" icon="puzzle" href="./redes">
-    Redes virtuales, Multus, Kube-OVN y aislamiento del tráfico.
-  </Card>
-</CardGrid>
+  <h3 style="text-align: center;">Almacenamiento y protección</h3>
 
-### Máquinas virtuales
+  <div style="max-width: 720px; margin-inline: auto;">
+    <CardGrid>
+      <Card title="Almacenamiento con Longhorn" icon="setting" href="./almacenamiento-longhorn">
+        Volúmenes persistentes, réplicas, snapshots y almacenamiento distribuido.
+      </Card>
+      <Card title="Backup y restauración" icon="approve-check" href="./backup-restauracion">
+        Protege máquinas virtuales y aprende los conceptos de copia y recuperación.
+      </Card>
+    </CardGrid>
+  </div>
 
-<CardGrid>
-  <Card title="Plantillas, aprovisionamiento y migración" icon="rocket" href="./maquinas-virtuales">
-    Crea máquinas virtuales, trabaja con plantillas y comprende la migración en vivo.
-  </Card>
-  <Card title="Despliegues escalables" icon="setting" href="./despliegues-escalables">
-    Organiza despliegues de múltiples máquinas virtuales mediante plantillas y configuración reutilizable.
-  </Card>
-</CardGrid>
+  <h3 style="text-align: center;">Redes</h3>
 
-### Operación y disponibilidad
+  <div style="max-width: 720px; margin-inline: auto;">
+    <CardGrid>
+      <Card title="Redes y aislamiento" icon="puzzle" href="./redes">
+        Redes virtuales, Multus, Kube-OVN y aislamiento del tráfico.
+      </Card>
+    </CardGrid>
+  </div>
 
-<CardGrid>
-  <Card title="Alta disponibilidad y mantenimiento" icon="approve-check" href="./alta-disponibilidad">
-    Comprende la disponibilidad de las cargas y las tareas de mantenimiento de nodos.
-  </Card>
-</CardGrid>
+  <h3 style="text-align: center;">Máquinas virtuales</h3>
 
-### Ecosistema
+  <div style="max-width: 720px; margin-inline: auto;">
+    <CardGrid>
+      <Card title="Plantillas, aprovisionamiento y migración" icon="rocket" href="./maquinas-virtuales">
+        Crea máquinas virtuales, trabaja con plantillas y comprende la migración en vivo.
+      </Card>
+      <Card title="Despliegues escalables" icon="setting" href="./despliegues-escalables">
+        Organiza despliegues de múltiples máquinas virtuales mediante plantillas y configuración reutilizable.
+      </Card>
+    </CardGrid>
+  </div>
 
-<CardGrid>
-  <Card title="SUSE Application Collection" icon="open-book" href="./suse-application-collection">
-    Explora imágenes de contenedor, gráficos Helm y seguridad de la cadena de suministro.
-  </Card>
-</CardGrid>
+  <h3 style="text-align: center;">Operación y disponibilidad</h3>
 
-## Cómo utilizar esta documentación
+  <div style="max-width: 720px; margin-inline: auto;">
+    <CardGrid>
+      <Card title="Alta disponibilidad y mantenimiento" icon="approve-check" href="./alta-disponibilidad">
+        Comprende la disponibilidad de las cargas y las tareas de mantenimiento de nodos.
+      </Card>
+    </CardGrid>
+  </div>
 
-Cada guía combina explicaciones conceptuales con comandos y ejemplos prácticos. Los comandos de consulta permiten explorar recursos y estados del clúster; antes de ejecutar operaciones que modifiquen máquinas virtuales, redes o almacenamiento, comprueba el contexto de Kubernetes y el alcance del recurso afectado.
+  <h3 style="text-align: center;">Ecosistema</h3>
 
-<details>
-  <summary>Consideraciones sobre los ejemplos de laboratorio</summary>
+  <div style="max-width: 720px; margin-inline: auto;">
+    <CardGrid>
+      <Card title="SUSE Application Collection" icon="open-book" href="./suse-application-collection">
+        Explora imágenes de contenedor, gráficos Helm y seguridad de la cadena de suministro.
+      </Card>
+    </CardGrid>
+  </div>
 
-  Los ejemplos están orientados a un entorno de laboratorio. Las funciones y los recursos disponibles pueden depender de la configuración y de la versión instalada. Si una práctica no puede completarse en un entorno concreto, estudia el procedimiento y sus conceptos sin interpretar esa limitación como un comportamiento general del producto.
-</details>
+  <div style="text-align: center;">
 
-## Referencias oficiales
+    <h2>Cómo utilizar esta documentación</h2>
 
-- [SUSE Virtualization — Overview](https://documentation.suse.com/cloudnative/virtualization/latest/en/introduction/overview.html)
-- [SUSE Virtualization — Requirements](https://documentation.suse.com/cloudnative/virtualization/latest/en/installation-setup/requirements.html)
-- [Kubernetes — Concepts](https://kubernetes.io/docs/concepts/overview/)
+    Cada guía combina explicaciones conceptuales con comandos y ejemplos prácticos. Los comandos de consulta permiten explorar recursos y estados del clúster; antes de ejecutar operaciones que modifiquen máquinas virtuales, redes o almacenamiento, comprueba el contexto de Kubernetes y el alcance del recurso afectado.
+
+  </div>
+
+  <details>
+    <summary>Consideraciones sobre los ejemplos de laboratorio</summary>
+
+    Los ejemplos están orientados a un entorno de laboratorio. Las funciones y los recursos disponibles pueden depender de la configuración y de la versión instalada. Si una práctica no puede completarse en un entorno concreto, estudia el procedimiento y sus conceptos sin interpretar esa limitación como un comportamiento general del producto.
+  </details>
+
+  <div style="text-align: center;">
+
+    <h2>Referencias oficiales</h2>
+
+  </div>
+
+  <ul style="text-align: center; list-style-position: inside;">
+    <li><a href="https://documentation.suse.com/cloudnative/virtualization/latest/en/introduction/overview.html">SUSE Virtualization — Overview</a></li>
+    <li><a href="https://documentation.suse.com/cloudnative/virtualization/latest/en/installation-setup/requirements.html">SUSE Virtualization — Requirements</a></li>
+    <li><a href="https://kubernetes.io/docs/concepts/overview/">Kubernetes — Concepts</a></li>
+  </ul>
+
+</div>
