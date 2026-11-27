@@ -1,0 +1,65 @@
+---
+title: Arquitectura de SUSE Virtualization
+description: Relación entre Harvester, Kubernetes, KubeVirt, Longhorn, Kube-OVN y Rancher Prime.
+---
+
+# Arquitectura de SUSE Virtualization
+
+SUSE Virtualization, conocido como Harvester, es una plataforma de infraestructura hiperconvergente (HCI) construida sobre Kubernetes y orientada a ejecutar máquinas virtuales sobre infraestructura bare metal. La plataforma integra virtualización, almacenamiento distribuido y redes en una misma capa de gestión.
+
+## Componentes principales
+
+| Componente | Responsabilidad |
+|---|---|
+| Kubernetes / RKE2 | Orquestación de los componentes y recursos del clúster. |
+| KubeVirt | Representación y ciclo de vida de máquinas virtuales mediante recursos Kubernetes. |
+| KVM / QEMU | Ejecución de las máquinas virtuales en los nodos. |
+| Longhorn | Volúmenes persistentes y réplicas distribuidas. |
+| Multus | Conexión de pods/VMs a interfaces de red adicionales. |
+| Kube-OVN | Redes overlay, VPC y subredes para cargas virtualizadas. |
+| Rancher Prime | Gestión de flotas y clústeres, usuarios, roles y cargas Kubernetes. |
+
+La interfaz de SUSE Virtualization se utiliza para gestionar recursos de virtualización. Rancher Prime proporciona una vista de gestión más amplia sobre los clústeres y sus cargas. No conviene confundir la administración de la flota con la operación diaria de una VM.
+
+## Inspección desde la API
+
+Usar el kubeconfig correcto y mantener las consultas de inventario en modo lectura:
+
+```bash
+kubectl --kubeconfig ./harvester-kubeconfig get nodes -o wide
+kubectl --kubeconfig ./harvester-kubeconfig get virtualmachines -A
+kubectl --kubeconfig ./harvester-kubeconfig get virtualmachineinstances -A -o wide
+kubectl --kubeconfig ./harvester-kubeconfig get storageclasses
+```
+
+Para entender un objeto concreto, ampliar la inspección:
+
+```bash
+kubectl --kubeconfig ./harvester-kubeconfig describe virtualmachine -n prod webserver-prod
+kubectl --kubeconfig ./harvester-kubeconfig get virtualmachine -n prod webserver-prod -o yaml
+```
+
+Los manifiestos completos pueden contener datos sensibles. Antes de compartirlos, revisar especialmente anotaciones, variables, cloud-init, referencias a secretos, claves y datos de usuario.
+
+## Evidencia del laboratorio
+
+En la captura final del 27/11/2026 se observaron dos máquinas virtuales en el namespace `prod`:
+
+| VM | Estado VM | Estado VMI | IP | Nodo |
+|---|---|---|---|---|
+| `core-services` | Running | Running | 192.168.122.53 | harvester3 |
+| `webserver-prod` | Running | Running | 192.168.122.147 | harvester1 |
+
+La condición `Ready=True` informa del estado del recurso gestionado por la plataforma. No sustituye a una comprobación de salud dentro del sistema operativo invitado ni a una prueba funcional de la aplicación.
+
+## Nodos y capacidad de planificación
+
+Los tres nodos reportaron `Ready`. Sin embargo, `harvester2` aparecía como `SchedulingDisabled`, con el taint `node.kubernetes.io/unschedulable:NoSchedule`. No presentaba presión de memoria, disco o PID en la consulta realizada.
+
+Un nodo puede estar Ready y, simultáneamente, estar acordonado. En ese estado no se programan nuevas cargas de forma ordinaria. Esto reduce las opciones de colocación para VMs y réplicas de almacenamiento.
+
+## Referencias
+
+- [SUSE Virtualization — Overview](https://documentation.suse.com/cloudnative/virtualization/latest/en/introduction/overview.html)
+- [SUSE Virtualization — Create a VM](https://documentation.suse.com/cloudnative/virtualization/latest/en/virtual-machines/create-vm.html)
+- [Kubernetes — Nodes](https://kubernetes.io/docs/concepts/architecture/nodes/)
