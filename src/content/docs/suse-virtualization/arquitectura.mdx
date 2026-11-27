@@ -54,9 +54,11 @@ La condición `Ready=True` informa del estado del recurso gestionado por la plat
 
 ## Nodos y capacidad de planificación
 
-Los tres nodos reportaron `Ready`. Sin embargo, `harvester2` aparecía como `SchedulingDisabled`, con el taint `node.kubernetes.io/unschedulable:NoSchedule`. No presentaba presión de memoria, disco o PID en la consulta realizada.
+Los tres nodos reportaron `Ready=True` en la captura del 27/11/2026. Sin embargo, `harvester2` aparecía como `Ready,SchedulingDisabled`, con `spec.unschedulable=true` y el taint `node.kubernetes.io/unschedulable:NoSchedule`.
 
-Un nodo puede estar Ready y, simultáneamente, estar acordonado. En ese estado no se programan nuevas cargas de forma ordinaria. Esto reduce las opciones de colocación para VMs y réplicas de almacenamiento.
+El nodo no presentaba presión de memoria, disco ni PID (`MemoryPressure=False`, `DiskPressure=False` y `PIDPressure=False`).
+
+Un nodo puede estar Ready y, simultáneamente, estar acordonado. En ese estado, el scheduler no programa normalmente nuevos pods en él, aunque los pods existentes pueden continuar ejecutándose. Esto reduce las opciones de colocación para nuevas cargas y puede limitar la capacidad disponible para las réplicas de almacenamiento.
 
 ## Referencias
 
