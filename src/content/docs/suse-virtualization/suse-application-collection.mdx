@@ -1,0 +1,102 @@
+---
+title: SUSE Application Collection
+description: Catálogo de imágenes OCI y charts Helm con metadatos de seguridad y procedencia.
+---
+
+# SUSE Application Collection
+
+SUSE Application Collection proporciona aplicaciones empaquetadas como imágenes de contenedor compatibles con OCI y charts Helm para su despliegue en Kubernetes. El catálogo incluye componentes de infraestructura, bases de datos, middleware, herramientas de desarrollo y observabilidad.
+
+Su objetivo es facilitar el consumo de aplicaciones mantenidas y acompañadas de información que ayude a evaluar su seguridad y procedencia.
+
+## Contenido del catálogo
+
+Entre los artefactos disponibles se encuentran:
+
+- **Imágenes de contenedor:** aplicaciones listas para ejecutarse en entornos compatibles con OCI.
+- **Charts Helm:** paquetes que describen y parametrizan despliegues en Kubernetes.
+- **SUSE Linux Enterprise Base Container Images (SLE BCI):** imágenes base utilizadas para construir contenedores.
+- **Herramientas y middleware:** componentes como NGINX, PostgreSQL, Redis, Prometheus, Grafana y otras aplicaciones, según disponibilidad y soporte del catálogo.
+
+El inventario, las versiones y las condiciones de acceso pueden cambiar. Consulta siempre la ficha del artefacto antes de incorporarlo a un despliegue.
+
+## Registro y autenticación
+
+El registro de SUSE Application Collection utiliza el dominio:
+
+```text
+dp.apps.rancher.io
+```
+
+Para descargar una imagen desde un cliente Docker, primero configura la autenticación con las credenciales o el mecanismo de cuenta de servicio autorizado para la organización:
+
+```bash
+docker login dp.apps.rancher.io
+```
+
+Después puedes descargar una imagen concreta. Por ejemplo:
+
+```bash
+docker pull dp.apps.rancher.io/containers/nginx:1.26.3
+```
+
+El acceso depende de la suscripción y de los permisos asociados a la organización. La visibilidad de un artefacto en el catálogo no implica necesariamente que la cuenta disponga de permiso para descargarlo.
+
+Para desplegar imágenes privadas en Kubernetes, el clúster necesita disponer de las credenciales de descarga mediante un `imagePullSecret` o el mecanismo de integración configurado. No incluyas contraseñas ni tokens en manifiestos, repositorios Git o valores Helm sin protección.
+
+## Imágenes OCI y charts Helm
+
+Las imágenes OCI contienen la aplicación y sus dependencias de ejecución en un formato estándar. Los charts Helm describen los recursos Kubernetes necesarios para desplegar y configurar una aplicación.
+
+El flujo habitual consiste en:
+
+1. Localizar la aplicación en el catálogo.
+2. Revisar la versión, el tipo de artefacto y los requisitos de acceso.
+3. Consultar los valores configurables y los requisitos de despliegue.
+4. Descargar o instalar el artefacto mediante las herramientas compatibles.
+5. Configurar las credenciales de registro de forma segura.
+6. Validar los recursos desplegados y su funcionamiento.
+
+Para trabajar con charts OCI, Helm permite utilizar referencias de registro OCI. La ruta exacta del chart y su versión deben obtenerse de la ficha del artefacto:
+
+```bash
+helm pull oci://<registry>/<namespace>/<chart> --version <version>
+```
+
+No presupongas que la ruta de un chart coincide con la ruta de la imagen de contenedor de la misma aplicación.
+
+## Seguridad y cadena de suministro
+
+Además del artefacto, es importante conocer su origen, contenido y proceso de construcción. SUSE Application Collection proporciona metadatos de seguridad y procedencia para ayudar a realizar estas comprobaciones.
+
+| Elemento | Utilidad |
+|---|---|
+| CVE | Identifica vulnerabilidades conocidas que afectan a componentes de software. |
+| SBOM | Inventario de los componentes incluidos en un artefacto. |
+| Procedencia (*provenance*) | Describe información sobre el proceso y el entorno de construcción. |
+| Atestaciones | Vinculan declaraciones verificables con un artefacto. |
+| Cosign | Herramienta del ecosistema Sigstore para firmar y verificar artefactos. |
+| SLSA | Marco de niveles y prácticas para mejorar la seguridad de los procesos de construcción de software. |
+
+La colección publica artefactos con procesos de construcción que alcanzan el nivel SLSA 3. Las imágenes incluyen información asociada a la cadena de suministro, como SBOM, procedencia y firmas. La disponibilidad y el formato concreto de los metadatos pueden variar según el artefacto.
+
+Una firma válida permite comprobar la identidad del publicador según la clave de confianza utilizada; no demuestra que la aplicación esté libre de vulnerabilidades. Del mismo modo, un SBOM facilita conocer los componentes incluidos, pero no sustituye el análisis de vulnerabilidades ni la gestión de actualizaciones.
+
+## Buenas prácticas
+
+- Utiliza versiones concretas en lugar de depender de etiquetas flotantes como `latest`.
+- Revisa el estado de soporte y las condiciones de acceso del artefacto.
+- Consulta las vulnerabilidades y los metadatos disponibles antes del despliegue.
+- Verifica las firmas y atestaciones siguiendo las instrucciones oficiales.
+- Conserva las credenciales en mecanismos seguros y limita sus permisos.
+- Mantén un proceso de actualización y revisión de imágenes y charts.
+- Registra qué versión se ha desplegado para facilitar auditorías y respuesta ante incidencias.
+
+## Referencias
+
+- [SUSE Application Collection](https://apps.rancher.io/)
+- [SUSE Application Collection — Documentation](https://docs.apps.rancher.io/)
+- [SUSE Application Collection — Authentication](https://docs.apps.rancher.io/get-started/authentication/)
+- [SUSE Application Collection — Signature verification](https://docs.apps.rancher.io/howto-guides/verify-signatures/)
+- [SLSA — Supply-chain Levels for Software Artifacts](https://slsa.dev/)
+- [Sigstore Cosign](https://docs.sigstore.dev/cosign/overview/)
