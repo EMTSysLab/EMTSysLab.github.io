@@ -36,6 +36,9 @@ export default defineConfig({
             { label: 'Backup y restauración', slug: 'suse-virtualization/backup-restauracion' },
             { label: 'Redes y aislamiento', slug: 'suse-virtualization/redes' },
             { label: 'Plantillas y migración', slug: 'suse-virtualization/maquinas-virtuales' },
+            { label: 'Alta disponibilidad', slug: 'suse-virtualization/alta-disponibilidad' },
+            { label: 'Despliegues escalables', slug: 'suse-virtualization/despliegues-escalables' },
+            { label: 'SUSE Application Collection', slug: 'suse-virtualization/suse-application-collection' },
           ],
         },
         {
