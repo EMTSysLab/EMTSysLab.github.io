@@ -3,7 +3,7 @@ title: SUSE Virtualization — formación práctica
 description: Guía formativa sobre arquitectura, almacenamiento, redes, máquinas virtuales y operaciones en SUSE Virtualization.
 ---
 
-import { Card } from '@astrojs/starlight/components';
+import { LinkCard } from '@astrojs/starlight/components';
 
 <div style="max-width: 960px; margin-inline: auto;">
 
@@ -24,9 +24,7 @@ import { Card } from '@astrojs/starlight/components';
   </div>
 
   <div style="display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; width: 100%;">
-    <Card title="Arquitectura y componentes" icon="puzzle" href="./arquitectura">
-      Conoce los componentes de la plataforma y su relación con Kubernetes.
-    </Card>
+    <LinkCard title="Arquitectura y componentes" href="/suse-virtualization/arquitectura/" description="Conoce los componentes de la plataforma y su relación con Kubernetes." />
   </div>
 
   <div style="text-align: center;">
@@ -36,12 +34,8 @@ import { Card } from '@astrojs/starlight/components';
   </div>
 
   <div style="display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; width: 100%;">
-    <Card title="Almacenamiento con Longhorn" icon="setting" href="./almacenamiento-longhorn">
-      Volúmenes persistentes, réplicas, snapshots y almacenamiento distribuido.
-    </Card>
-    <Card title="Backup y restauración" icon="approve-check" href="./backup-restauracion">
-      Protege máquinas virtuales y aprende los conceptos de copia y recuperación.
-    </Card>
+    <LinkCard title="Almacenamiento con Longhorn" href="/suse-virtualization/almacenamiento-longhorn/" description="Volúmenes persistentes, réplicas, snapshots y almacenamiento distribuido." />
+    <LinkCard title="Backup y restauración" href="/suse-virtualization/backup-restauracion/" description="Protege máquinas virtuales y aprende los conceptos de copia y recuperación." />
   </div>
 
   <div style="text-align: center;">
@@ -51,9 +45,7 @@ import { Card } from '@astrojs/starlight/components';
   </div>
 
   <div style="display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; width: 100%;">
-    <Card title="Redes y aislamiento" icon="puzzle" href="./redes">
-      Redes virtuales, Multus, Kube-OVN y aislamiento del tráfico.
-    </Card>
+    <LinkCard title="Redes y aislamiento" href="/suse-virtualization/redes/" description="Redes virtuales, Multus, Kube-OVN y aislamiento del tráfico." />
   </div>
 
   <div style="text-align: center;">
@@ -63,12 +55,8 @@ import { Card } from '@astrojs/starlight/components';
   </div>
 
   <div style="display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; width: 100%;">
-    <Card title="Plantillas, aprovisionamiento y migración" icon="rocket" href="./maquinas-virtuales">
-      Crea máquinas virtuales, trabaja con plantillas y comprende la migración en vivo.
-    </Card>
-    <Card title="Despliegues escalables" icon="setting" href="./despliegues-escalables">
-      Organiza despliegues de múltiples máquinas virtuales mediante plantillas y configuración reutilizable.
-    </Card>
+    <LinkCard title="Plantillas, aprovisionamiento y migración" href="/suse-virtualization/maquinas-virtuales/" description="Crea máquinas virtuales, trabaja con plantillas y comprende la migración en vivo." />
+    <LinkCard title="Despliegues escalables" href="/suse-virtualization/despliegues-escalables/" description="Organiza despliegues de múltiples máquinas virtuales mediante plantillas y configuración reutilizable." />
   </div>
 
   <div style="text-align: center;">
@@ -78,9 +66,7 @@ import { Card } from '@astrojs/starlight/components';
   </div>
 
   <div style="display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; width: 100%;">
-    <Card title="Alta disponibilidad y mantenimiento" icon="approve-check" href="./alta-disponibilidad">
-      Comprende la disponibilidad de las cargas y las tareas de mantenimiento de nodos.
-    </Card>
+    <LinkCard title="Alta disponibilidad y mantenimiento" href="/suse-virtualization/alta-disponibilidad/" description="Comprende la disponibilidad de las cargas y las tareas de mantenimiento de nodos." />
   </div>
 
   <div style="text-align: center;">
@@ -90,9 +76,7 @@ import { Card } from '@astrojs/starlight/components';
   </div>
 
   <div style="display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; width: 100%;">
-    <Card title="SUSE Application Collection" icon="open-book" href="./suse-application-collection">
-      Explora imágenes de contenedor, gráficos Helm y seguridad de la cadena de suministro.
-    </Card>
+    <LinkCard title="SUSE Application Collection" href="/suse-virtualization/suse-application-collection/" description="Explora imágenes de contenedor, gráficos Helm y seguridad de la cadena de suministro." />
   </div>
 
   ## Cómo utilizar esta documentación
