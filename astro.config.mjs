@@ -28,6 +28,17 @@ export default defineConfig({
       customCss: ['./src/styles/global.css'],
       sidebar: [
         {
+          label: 'SUSE Virtualization',
+          items: [
+            { label: 'Laboratorio práctico — índice', slug: 'suse-virtualization/index' },
+            { label: 'Arquitectura', slug: 'suse-virtualization/arquitectura' },
+            { label: 'Almacenamiento Longhorn', slug: 'suse-virtualization/almacenamiento-longhorn' },
+            { label: 'Backup y restauración', slug: 'suse-virtualization/backup-restauracion' },
+            { label: 'Redes y aislamiento', slug: 'suse-virtualization/redes' },
+            { label: 'Plantillas y migración', slug: 'suse-virtualization/maquinas-virtuales' },
+          ],
+        },
+        {
           label: 'Linux',
           items: [
             { label: 'Hardening de RHEL', slug: 'linux/hardening-rhel' },
