@@ -1,0 +1,65 @@
+---
+title: Redes y aislamiento en SUSE Virtualization
+description: NetworkAttachmentDefinitions, Kube-OVN, subredes overlay y límites de NetworkPolicy.
+---
+
+# Redes y aislamiento en SUSE Virtualization
+
+Las máquinas virtuales pueden utilizar la red de gestión y redes adicionales. En Harvester, las redes se integran con Kubernetes y componentes como Multus y Kube-OVN. La topología y el tipo de red determinan cómo se conectan las interfaces de las VMs.
+
+## Elementos
+
+- **NetworkAttachmentDefinition (NAD):** describe una red adicional que puede solicitar una carga.
+- **Multus:** permite conectar una carga a más de una red.
+- **Kube-OVN:** proporciona redes overlay, VPC y subredes.
+- **Subnet:** define el rango IP y parámetros de red asociados.
+- **NetworkPolicy:** política de Kubernetes para controlar tráfico de pods, sujeta a la implementación CNI y a su ámbito de aplicación.
+
+Una red privada o una subred con NAT deshabilitado no equivale automáticamente a cifrado. Tampoco debe asumirse que una NetworkPolicy aplicada a pods controla todas las interfaces secundarias de una VM.
+
+## Consultas de inventario
+
+```bash
+kubectl get network-attachment-definitions -A
+kubectl get subnets.kubeovn.io
+kubectl get vpcs.kubeovn.io
+kubectl get networkpolicies -A
+```
+
+Para revisar una política concreta:
+
+```bash
+kubectl -n prod get networkpolicy default-deny-all -o yaml
+```
+
+Hay que leer `podSelector`, `policyTypes`, `ingress` y `egress`. Una política que declara solo `Ingress` no debe describirse como bloqueo de salida.
+
+## Evidencia del laboratorio
+
+Se observaron las siguientes redes adicionales:
+
+- `prod/forensics-zone`
+- `prod/secure-loop-dev`
+- `prod/secure-loop-prod`
+- `prod/service`
+- Redes de sistema para almacenamiento y migración en `harvester-system`.
+
+Subredes Kube-OVN observadas:
+
+| Subnet | CIDR | Private | NAT |
+|---|---|---:|---:|
+| `forensics-zone` | 172.16.1.0/24 | true | false |
+| `secure-vpc-dev` | 192.168.32.0/24 | true | false |
+| `join` | 100.64.0.0/16 | — | — |
+| `ovn-default` | 10.54.0.0/16 | — | true |
+
+También apareció `prod/default-deny-all`, con selector de pods vacío y `policyTypes: [Ingress]`. Esto confirma el objeto y su alcance declarado sobre pods del namespace, pero no demuestra que el tráfico se bloquee efectivamente ni que la política gobierne las interfaces secundarias de las VMs.
+
+## Validación recomendada
+
+Para validar aislamiento, definir primero los flujos permitidos y denegados, y probarlos desde cada interfaz y origen relevante. Documentar rutas, gateways, DNS, NAT, reglas del CNI y el comportamiento de las NetworkPolicies. No utilizar el mero estado `Ready` de una VM como prueba de aislamiento de red.
+
+## Referencias
+
+- [SUSE Virtualization — Cluster Network](https://documentation.suse.com/cloudnative/virtualization/latest/en/networking/cluster-network.html)
+- [Kubernetes — Network Policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/)
