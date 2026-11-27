@@ -11,15 +11,15 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 
     ![SUSE Virtualization — Formación práctica](/suse-virtualization-banner.png)
 
-    Aprende a trabajar con **SUSE Virtualization (Harvester)** a través de una colección de guías prácticas. Explora su arquitectura, administra almacenamiento y redes, y descubre cómo desplegar y mantener máquinas virtuales.
-
   </div>
 
-  <h2 style="text-align: center;">Explora la formación</h2>
+  Aprende a trabajar con **SUSE Virtualization (Harvester)** a través de una colección de guías prácticas. Explora su arquitectura, administra almacenamiento y redes, y descubre cómo desplegar y mantener máquinas virtuales.
 
-  <h3 style="text-align: center;">Fundamentos</h3>
+  ## Explora la formación
 
-  <div style="max-width: 720px; margin-inline: auto;">
+  ### Fundamentos
+
+  <div style="max-width: 420px; margin-inline: auto;">
     <CardGrid>
       <Card title="Arquitectura y componentes" icon="puzzle" href="./arquitectura">
         Conoce los componentes de la plataforma y su relación con Kubernetes.
@@ -27,7 +27,7 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
     </CardGrid>
   </div>
 
-  <h3 style="text-align: center;">Almacenamiento y protección</h3>
+  ### Almacenamiento y protección
 
   <div style="max-width: 720px; margin-inline: auto;">
     <CardGrid>
@@ -40,9 +40,9 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
     </CardGrid>
   </div>
 
-  <h3 style="text-align: center;">Redes</h3>
+  ### Redes
 
-  <div style="max-width: 720px; margin-inline: auto;">
+  <div style="max-width: 420px; margin-inline: auto;">
     <CardGrid>
       <Card title="Redes y aislamiento" icon="puzzle" href="./redes">
         Redes virtuales, Multus, Kube-OVN y aislamiento del tráfico.
@@ -50,7 +50,7 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
     </CardGrid>
   </div>
 
-  <h3 style="text-align: center;">Máquinas virtuales</h3>
+  ### Máquinas virtuales
 
   <div style="max-width: 720px; margin-inline: auto;">
     <CardGrid>
@@ -63,9 +63,9 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
     </CardGrid>
   </div>
 
-  <h3 style="text-align: center;">Operación y disponibilidad</h3>
+  ### Operación y disponibilidad
 
-  <div style="max-width: 720px; margin-inline: auto;">
+  <div style="max-width: 420px; margin-inline: auto;">
     <CardGrid>
       <Card title="Alta disponibilidad y mantenimiento" icon="approve-check" href="./alta-disponibilidad">
         Comprende la disponibilidad de las cargas y las tareas de mantenimiento de nodos.
@@ -73,9 +73,9 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
     </CardGrid>
   </div>
 
-  <h3 style="text-align: center;">Ecosistema</h3>
+  ### Ecosistema
 
-  <div style="max-width: 720px; margin-inline: auto;">
+  <div style="max-width: 420px; margin-inline: auto;">
     <CardGrid>
       <Card title="SUSE Application Collection" icon="open-book" href="./suse-application-collection">
         Explora imágenes de contenedor, gráficos Helm y seguridad de la cadena de suministro.
@@ -83,13 +83,9 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
     </CardGrid>
   </div>
 
-  <div style="text-align: center;">
+  ## Cómo utilizar esta documentación
 
-    <h2>Cómo utilizar esta documentación</h2>
-
-    Cada guía combina explicaciones conceptuales con comandos y ejemplos prácticos. Los comandos de consulta permiten explorar recursos y estados del clúster; antes de ejecutar operaciones que modifiquen máquinas virtuales, redes o almacenamiento, comprueba el contexto de Kubernetes y el alcance del recurso afectado.
-
-  </div>
+  Cada guía combina explicaciones conceptuales con comandos y ejemplos prácticos. Los comandos de consulta permiten explorar recursos y estados del clúster; antes de ejecutar operaciones que modifiquen máquinas virtuales, redes o almacenamiento, comprueba el contexto de Kubernetes y el alcance del recurso afectado.
 
   <details>
     <summary>Consideraciones sobre los ejemplos de laboratorio</summary>
@@ -97,16 +93,10 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
     Los ejemplos están orientados a un entorno de laboratorio. Las funciones y los recursos disponibles pueden depender de la configuración y de la versión instalada. Si una práctica no puede completarse en un entorno concreto, estudia el procedimiento y sus conceptos sin interpretar esa limitación como un comportamiento general del producto.
   </details>
 
-  <div style="text-align: center;">
+  ## Referencias oficiales
 
-    <h2>Referencias oficiales</h2>
-
-  </div>
-
-  <ul style="text-align: center; list-style-position: inside;">
-    <li><a href="https://documentation.suse.com/cloudnative/virtualization/latest/en/introduction/overview.html">SUSE Virtualization — Overview</a></li>
-    <li><a href="https://documentation.suse.com/cloudnative/virtualization/latest/en/installation-setup/requirements.html">SUSE Virtualization — Requirements</a></li>
-    <li><a href="https://kubernetes.io/docs/concepts/overview/">Kubernetes — Concepts</a></li>
-  </ul>
+  - [SUSE Virtualization — Overview](https://documentation.suse.com/cloudnative/virtualization/latest/en/introduction/overview.html)
+  - [SUSE Virtualization — Requirements](https://documentation.suse.com/cloudnative/virtualization/latest/en/installation-setup/requirements.html)
+  - [Kubernetes — Concepts](https://kubernetes.io/docs/concepts/overview/)
 
 </div>
