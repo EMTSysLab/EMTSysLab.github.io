@@ -1259,8 +1259,8 @@ Un sistema bien bastionado es aquel cuyo estado puedes verificar en menos de 5 m
 
 #### SELinux
 
-- [RHEL 10 — Uso de SELinux](https://docs.redhat.com/es/documentation/red_hat_enterprise_linux/10/html/using_selinux/index) (español): documentación general de arquitectura, configuración, administración y políticas.
-- [RHEL 10 — Resolución de problemas relacionados con SELinux](https://docs.redhat.com/es/documentation/red_hat_enterprise_linux/10/html/using_selinux/troubleshooting-problems-related-to-selinux) (español): diagnóstico de denegaciones, análisis de AVC y resolución de incidencias.
+- [RHEL 10 — Uso de SELinux](https://docs.redhat.com/es/documentation/red_hat_enterprise_linux/10/html/using_selinux/index): documentación general de arquitectura, configuración, administración y políticas. Aunque la ruta utiliza el prefijo `/es/`, Red Hat muestra el contenido de esta página en inglés.
+- [RHEL 10 — Resolución de problemas relacionados con SELinux](https://docs.redhat.com/es/documentation/red_hat_enterprise_linux/10/html/using_selinux/troubleshooting-problems-related-to-selinux): diagnóstico de denegaciones, análisis de AVC y resolución de incidencias. Esta página también se muestra en inglés.
 
 #### Instalación y particionado
 
