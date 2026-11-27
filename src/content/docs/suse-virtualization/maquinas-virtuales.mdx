@@ -1,0 +1,98 @@
+---
+title: Plantillas, aprovisionamiento y migración de VMs
+description: Gestión de plantillas, creación de máquinas virtuales y migración en vivo en SUSE Virtualization.
+---
+
+SUSE Virtualization permite crear máquinas virtuales a partir de configuraciones definidas y gestionar su ciclo de vida mediante recursos de Kubernetes. Las plantillas facilitan la reutilización de configuraciones, mientras que la migración en vivo permite trasladar una máquina virtual en ejecución entre nodos compatibles.
+
+## Plantillas de máquinas virtuales
+
+Las plantillas permiten reutilizar una configuración base para crear máquinas virtuales con características comunes, como recursos de CPU y memoria, discos y dispositivos de red.
+
+Una plantilla puede disponer de distintas versiones. Esto facilita mantener configuraciones conocidas y controlar qué definición se utiliza al aprovisionar nuevas máquinas virtuales.
+
+Consultar las plantillas y sus versiones:
+
+```bash
+kubectl get virtualmachinetemplates -A
+kubectl get virtualmachinetemplateversions -A
+```
+
+Antes de reutilizar o trasladar manifiestos entre clústeres, revisa las referencias a imágenes, redes, almacenamiento, secretos y datos de inicialización como cloud-init. Un manifiesto exportado desde un recurso existente puede contener campos generados por el sistema o dependencias que no existen en el clúster de destino.
+
+## Aprovisionamiento de máquinas virtuales
+
+El aprovisionamiento crea los recursos necesarios para ejecutar una máquina virtual. Según la configuración, puede implicar:
+
+- Asignación de CPU y memoria.
+- Creación o asociación de discos y volúmenes.
+- Configuración de interfaces de red.
+- Selección de un nodo que cumpla los requisitos de planificación.
+- Inicialización del sistema operativo invitado.
+
+Crear el recurso de una VM no significa que el aprovisionamiento haya finalizado. Es necesario comprobar el estado de la máquina virtual, su instancia, los volúmenes asociados y los eventos.
+
+Consultas básicas:
+
+```bash
+kubectl get virtualmachines -A
+kubectl get virtualmachineinstances -A -o wide
+kubectl get pods -A
+kubectl get pvc -A
+```
+
+Para investigar una máquina virtual concreta:
+
+```bash
+kubectl describe virtualmachine <vm> -n <namespace>
+kubectl get virtualmachine <vm> -n <namespace> -o yaml
+kubectl get events -n <namespace> --sort-by=.lastTimestamp
+```
+
+Al desplegar varias instancias, comprueba previamente la capacidad de cómputo, almacenamiento y red, así como las restricciones de scheduling. Una solicitud aceptada por la API no garantiza que todas las máquinas virtuales puedan llegar a ejecutarse simultáneamente.
+
+## Migración en vivo
+
+La migración en vivo (*Live Migration*) traslada una máquina virtual en ejecución desde un nodo de origen a otro nodo compatible, procurando mantener el servicio disponible durante la operación.
+
+Su viabilidad depende de las condiciones del clúster y de la configuración de la VM, entre ellas:
+
+- Capacidad suficiente en el nodo de destino.
+- Compatibilidad de CPU y de la configuración de la máquina virtual.
+- Disponibilidad y compatibilidad del almacenamiento.
+- Conectividad de red necesaria para la migración.
+- Reglas de scheduling y restricciones de ubicación.
+
+Consultar las migraciones y las instancias:
+
+```bash
+kubectl get virtualmachineinstancemigrations -A
+kubectl get virtualmachineinstances -A -o wide
+```
+
+Inspeccionar una migración concreta:
+
+```bash
+kubectl describe virtualmachineinstancemigration <migration> -n <namespace>
+kubectl get virtualmachineinstancemigration <migration> -n <namespace> -o yaml
+```
+
+Interpreta el estado y las condiciones del recurso de migración junto con los eventos y el estado final de la instancia. La finalización de una migración no demuestra por sí sola alta disponibilidad, tolerancia a cualquier fallo ni ausencia total de interrupción.
+
+## Comprobaciones posteriores
+
+Después de crear o migrar una máquina virtual, valida:
+
+1. Que el recurso VM y su instancia se encuentran en el estado esperado.
+2. Que los volúmenes están asociados y disponibles.
+3. Que las interfaces de red tienen conectividad.
+4. Que el sistema operativo invitado ha arrancado correctamente.
+5. Que los servicios y aplicaciones funcionan.
+6. Que los eventos no muestran errores pendientes relacionados con la operación.
+
+Distingue siempre entre el estado del recurso Kubernetes, la salud del sistema operativo invitado y el funcionamiento de la aplicación. Son niveles de comprobación diferentes.
+
+## Referencias
+
+- [SUSE Virtualization — Create a VM](https://documentation.suse.com/cloudnative/virtualization/latest/en/virtual-machines/create-vm.html)
+- [SUSE Virtualization — Live Migration](https://documentation.suse.com/cloudnative/virtualization/latest/en/virtual-machines/live-migration.html)

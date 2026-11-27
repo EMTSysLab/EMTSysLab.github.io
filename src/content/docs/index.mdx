@@ -6,56 +6,273 @@ hero:
   tagline: " "
 ---
 
-## ¿Qué encontrarás aquí?
+<div class="home-content">
 
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin-top:1.5rem;">
+  <section class="home-featured">
+    <a href="/suse-virtualization/" class="home-featured-card">
+      <div class="home-featured-copy">
+        <span class="home-eyebrow">Contenido destacado</span>
+        <h2>SUSE Virtualization</h2>
+        <p>Una ruta formativa para conocer la arquitectura de la plataforma, administrar almacenamiento y redes, desplegar máquinas virtuales y trabajar con su disponibilidad.</p>
+        <span class="home-link">Explorar la formación <span aria-hidden="true">→</span></span>
+      </div>
+      <div class="home-featured-mark" aria-hidden="true">SV</div>
+    </a>
+  </section>
 
-  <a href="/linux/hardening-rhel/" style="display:flex;flex-direction:column;justify-content:space-between;padding:1.25rem 1.5rem;border-radius:8px;border:1px solid rgba(255,255,255,0.1);text-decoration:none;background:rgba(255,255,255,0.03);">
-    <div>
-      <div style="font-weight:700;color:#cdd6f4;margin-bottom:0.5rem;">Linux</div>
-      <div style="font-size:0.85rem;color:#a6adc8;line-height:1.6;">Hardening, SELinux, auditorías y administración avanzada en RHEL y Rocky Linux.</div>
+  <section id="documentacion" class="home-catalog">
+    <div class="home-section-heading">
+      <span class="home-eyebrow">Biblioteca técnica</span>
+      <h2>Explora por especialidad</h2>
+      <p>Documentación, laboratorios y recursos organizados por áreas de administración de sistemas.</p>
     </div>
-    <div style="margin-top:1rem;color:#cba6f7;font-size:0.85rem;">Explorar →</div>
-  </a>
 
-  <a href="#" style="display:flex;flex-direction:column;justify-content:space-between;padding:1.25rem 1.5rem;border-radius:8px;border:1px solid rgba(255,255,255,0.1);text-decoration:none;background:rgba(255,255,255,0.03);">
-    <div>
-      <div style="font-weight:700;color:#cdd6f4;margin-bottom:0.5rem;">Kubernetes, Podman & Docker</div>
-      <div style="font-size:0.85rem;color:#a6adc8;line-height:1.6;">Orquestación de contenedores, Kubernetes en producción y migración Docker → Podman.</div>
-    </div>
-    <div style="margin-top:1rem;color:#cba6f7;font-size:0.85rem;">Próximamente →</div>
-  </a>
+    <div class="home-grid">
+      <a href="/linux/hardening-rhel/" class="home-card">
+        <span class="home-card-icon" aria-hidden="true">⌘</span>
+        <h3>Linux</h3>
+        <p>Administración, hardening, SELinux, auditoría y resolución de problemas en sistemas Linux.</p>
+        <span class="home-link">Explorar Linux →</span>
+      </a>
 
-  <a href="/ia/ollama-llms-locales/" style="display:flex;flex-direction:column;justify-content:space-between;padding:1.25rem 1.5rem;border-radius:8px;border:1px solid rgba(255,255,255,0.1);text-decoration:none;background:rgba(255,255,255,0.03);">
-    <div>
-      <div style="font-weight:700;color:#cdd6f4;margin-bottom:0.5rem;">Inteligencia Artificial</div>
-      <div style="font-size:0.85rem;color:#a6adc8;line-height:1.6;">IA aplicada a sysadmin, LLMs locales con Ollama y agentes para automatización IT.</div>
-    </div>
-    <div style="margin-top:1rem;color:#cba6f7;font-size:0.85rem;">Explorar →</div>
-  </a>
+      <a href="/kubernetes/k8sgames-aprende-kubernetes/" class="home-card">
+        <span class="home-card-icon" aria-hidden="true">◈</span>
+        <h3>Kubernetes, Podman & Docker</h3>
+        <p>Contenedores, orquestación y recursos para practicar los fundamentos de Kubernetes.</p>
+        <span class="home-link">Explorar contenedores →</span>
+      </a>
 
-  <a href="/rhcsa/intro-examen/" style="display:flex;flex-direction:column;justify-content:space-between;padding:1.25rem 1.5rem;border-radius:8px;border:1px solid rgba(255,255,255,0.1);text-decoration:none;background:rgba(255,255,255,0.03);">
-    <div>
-      <div style="font-weight:700;color:#cdd6f4;margin-bottom:0.5rem;">Road to Cert</div>
-      <div style="font-size:0.85rem;color:#a6adc8;line-height:1.6;">Guías de preparación para RHCSA, RHCE y otras certificaciones técnicas.</div>
-    </div>
-    <div style="margin-top:1rem;color:#cba6f7;font-size:0.85rem;">Explorar →</div>
-  </a>
+      <a href="/ia/ollama-llms-locales/" class="home-card">
+        <span class="home-card-icon" aria-hidden="true">✧</span>
+        <h3>Inteligencia Artificial</h3>
+        <p>Modelos de lenguaje locales, Ollama y aplicaciones de IA para tareas técnicas.</p>
+        <span class="home-link">Explorar IA →</span>
+      </a>
 
-  <a href="#" style="display:flex;flex-direction:column;justify-content:space-between;padding:1.25rem 1.5rem;border-radius:8px;border:1px solid rgba(255,255,255,0.1);text-decoration:none;background:rgba(255,255,255,0.03);">
-    <div>
-      <div style="font-weight:700;color:#cdd6f4;margin-bottom:0.5rem;">Automatización & Scripting</div>
-      <div style="font-size:0.85rem;color:#a6adc8;line-height:1.6;">Bash avanzado, Ansible, Python para sysadmins y scripts de producción real.</div>
-    </div>
-    <div style="margin-top:1rem;color:#cba6f7;font-size:0.85rem;">Próximamente →</div>
-  </a>
+      <a href="/rhcsa/intro-examen/" class="home-card">
+        <span class="home-card-icon" aria-hidden="true">◎</span>
+        <h3>Road to Cert</h3>
+        <p>Itinerarios de aprendizaje y preparación para certificaciones técnicas como RHCSA.</p>
+        <span class="home-link">Preparar certificaciones →</span>
+      </a>
 
-  <a href="#" style="display:flex;flex-direction:column;justify-content:space-between;padding:1.25rem 1.5rem;border-radius:8px;border:1px solid rgba(255,255,255,0.1);text-decoration:none;background:rgba(255,255,255,0.03);">
-    <div>
-      <div style="font-weight:700;color:#cdd6f4;margin-bottom:0.5rem;">SysAdmin Toolkit</div>
-      <div style="font-size:0.85rem;color:#a6adc8;line-height:1.6;">Monitorización, ticketing, gestión de inventario y herramientas esenciales.</div>
+      <a href="/toolkit/monitorizacion/adagios-nagios-nrpe/" class="home-card">
+        <span class="home-card-icon" aria-hidden="true">▤</span>
+        <h3>SysAdmin Toolkit</h3>
+        <p>Herramientas prácticas para monitorización y operación de infraestructuras.</p>
+        <span class="home-link">Explorar herramientas →</span>
+      </a>
+
+      <div class="home-card home-card-pending">
+        <span class="home-card-icon" aria-hidden="true">⌁</span>
+        <h3>Automatización & Scripting</h3>
+        <p>Bash, Ansible y Python aplicados a la automatización de tareas de administración.</p>
+        <span class="home-status">En preparación</span>
+      </div>
     </div>
-    <div style="margin-top:1rem;color:#cba6f7;font-size:0.85rem;">Próximamente →</div>
-  </a>
+  </section>
+
+  <section class="home-about">
+    <h2>Aprender, probar y documentar</h2>
+    <p>EMTSysLab es un espacio personal de aprendizaje y documentación técnica. Aquí reúno procedimientos, conceptos y soluciones que pueden servir como referencia para otros profesionales de sistemas.</p>
+  </section>
 
 </div>
+
+<style>{`
+  .home-content {
+    width: 100%;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 1.25rem 2rem;
+  }
+
+  .home-featured {
+    margin: 1.25rem 0 3rem;
+  }
+
+  .home-featured-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    min-height: 220px;
+    padding: clamp(1.5rem, 4vw, 2.75rem);
+    border: 1px solid rgba(203, 166, 247, 0.35);
+    border-radius: 16px;
+    color: inherit;
+    text-decoration: none;
+    background: linear-gradient(115deg, rgba(203, 166, 247, 0.13), rgba(137, 180, 250, 0.06) 55%, rgba(148, 226, 213, 0.08));
+    transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease;
+  }
+
+  .home-featured-card:hover {
+    border-color: var(--sl-color-accent);
+    transform: translateY(-3px);
+    box-shadow: 0 14px 36px rgba(0, 0, 0, .18);
+  }
+
+  .home-featured-copy {
+    max-width: 700px;
+  }
+
+  .home-eyebrow {
+    display: inline-block;
+    margin-bottom: .65rem;
+    color: var(--sl-color-accent);
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+
+  .home-featured h2,
+  .home-section-heading h2,
+  .home-about h2 {
+    margin: 0 0 .75rem;
+    color: var(--sl-color-white);
+    font-size: clamp(1.45rem, 3vw, 2rem);
+  }
+
+  .home-featured p,
+  .home-section-heading p,
+  .home-card p,
+  .home-about p {
+    margin: 0;
+    color: var(--sl-color-gray-2);
+    line-height: 1.7;
+  }
+
+  .home-link {
+    display: inline-block;
+    margin-top: 1.25rem;
+    color: var(--sl-color-accent);
+    font-size: .9rem;
+    font-weight: 700;
+  }
+
+  .home-featured-mark {
+    display: grid;
+    flex: 0 0 116px;
+    width: 116px;
+    height: 116px;
+    place-items: center;
+    border: 1px solid rgba(203, 166, 247, .35);
+    border-radius: 28px;
+    color: #cba6f7;
+    background: rgba(17, 17, 27, .35);
+    font-family: monospace;
+    font-size: 2.25rem;
+    font-weight: 800;
+    letter-spacing: -.08em;
+  }
+
+  .home-catalog {
+    margin-bottom: 3rem;
+  }
+
+  .home-section-heading {
+    margin-bottom: 1.4rem;
+  }
+
+  .home-section-heading p {
+    max-width: 680px;
+  }
+
+  .home-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .home-card {
+    display: flex;
+    min-height: 205px;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.35rem 1.5rem;
+    border: 1px solid var(--sl-color-hairline);
+    border-radius: 12px;
+    color: inherit;
+    text-decoration: none;
+    background: var(--sl-color-bg-nav);
+    transition: border-color .2s ease, transform .2s ease, background .2s ease;
+  }
+
+  a.home-card:hover {
+    border-color: var(--sl-color-accent);
+    transform: translateY(-3px);
+    background: var(--sl-color-bg);
+  }
+
+  .home-card-icon {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    margin-bottom: .9rem;
+    place-items: center;
+    border-radius: 10px;
+    color: var(--sl-color-accent);
+    background: var(--sl-color-accent-low);
+    font-size: 1.35rem;
+  }
+
+  .home-card h3 {
+    margin: 0 0 .5rem;
+    color: var(--sl-color-white);
+    font-size: 1.08rem;
+  }
+
+  .home-card p {
+    font-size: .9rem;
+  }
+
+  .home-card .home-link {
+    margin-top: auto;
+    padding-top: 1rem;
+  }
+
+  .home-card-pending {
+    opacity: .78;
+    border-style: dashed;
+  }
+
+  .home-status {
+    margin-top: auto;
+    padding-top: 1rem;
+    color: var(--sl-color-gray-3);
+    font-size: .82rem;
+    font-weight: 600;
+  }
+
+  .home-about {
+    padding: 1.5rem 0 .5rem;
+    border-top: 1px solid var(--sl-color-hairline);
+  }
+
+  .home-about p {
+    max-width: 800px;
+  }
+
+  @media (max-width: 640px) {
+    .home-content {
+      padding-inline: .5rem;
+    }
+
+    .home-featured-card {
+      min-height: 0;
+    }
+
+    .home-featured-mark {
+      display: none;
+    }
+
+    .home-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .home-card {
+      min-height: 185px;
+    }
+  }
+`}</style>

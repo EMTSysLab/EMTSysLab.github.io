@@ -26,7 +26,22 @@ export default defineConfig({
         catppuccin({ defaultFlavour: 'mocha' }),
       ],
       customCss: ['./src/styles/global.css'],
+      routeMiddleware: './src/routeData.ts',
       sidebar: [
+        {
+          label: 'SUSE Virtualization',
+          items: [
+            { label: 'Laboratorio práctico — índice', slug: 'suse-virtualization' },
+            { label: 'Arquitectura', slug: 'suse-virtualization/arquitectura' },
+            { label: 'Almacenamiento Longhorn', slug: 'suse-virtualization/almacenamiento-longhorn' },
+            { label: 'Backup y restauración', slug: 'suse-virtualization/backup-restauracion' },
+            { label: 'Redes y aislamiento', slug: 'suse-virtualization/redes' },
+            { label: 'Plantillas y migración', slug: 'suse-virtualization/maquinas-virtuales' },
+            { label: 'Alta disponibilidad', slug: 'suse-virtualization/alta-disponibilidad' },
+            { label: 'Despliegues escalables', slug: 'suse-virtualization/despliegues-escalables' },
+            { label: 'SUSE Application Collection', slug: 'suse-virtualization/suse-application-collection' },
+          ],
+        },
         {
           label: 'Linux',
           items: [
@@ -118,13 +133,6 @@ export default defineConfig({
           ],
         },
         {
-          label: 'Automatización & Scripting',
-          badge: { text: 'Próximamente', variant: 'caution' },
-          items: [
-            { label: 'Próximamente...', link: '#' },
-          ],
-        },
-        {
           label: 'SysAdmin Toolkit',
           items: [
             {
@@ -133,6 +141,13 @@ export default defineConfig({
                 { label: 'Adagios — Nagios y NRPE', slug: 'toolkit/monitorizacion/adagios-nagios-nrpe' },
               ],
             },
+          ],
+        },
+        {
+          label: 'Automatización & Scripting',
+          badge: { text: 'Próximamente', variant: 'caution' },
+          items: [
+            { label: 'Próximamente...', link: '#' },
           ],
         },
       ],

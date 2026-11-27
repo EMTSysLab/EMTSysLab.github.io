@@ -1,0 +1,82 @@
+---
+title: Redes y aislamiento en SUSE Virtualization
+description: Redes de máquinas virtuales, Multus, Kube-OVN y políticas de aislamiento.
+---
+
+SUSE Virtualization permite conectar las máquinas virtuales a la red de gestión y a redes adicionales. La conectividad depende de la configuración de las redes, de las interfaces de cada máquina virtual y de los componentes de red integrados con Kubernetes.
+
+## Componentes principales
+
+- **NetworkAttachmentDefinition (NAD):** recurso que describe cómo conectar una carga de trabajo a una red adicional.
+- **Multus:** complemento CNI que permite asignar varias interfaces de red a un pod. Se utiliza para conectar máquinas virtuales a redes adicionales.
+- **Kube-OVN:** proporciona funciones de red para Kubernetes, como redes overlay, VPC y subredes.
+- **Subnet:** define parámetros de una red, como el rango de direcciones IP y determinadas opciones de conectividad.
+- **NetworkPolicy:** recurso de Kubernetes que define reglas de tráfico para pods, siempre que la implementación de red admita su aplicación.
+
+Una red privada o una subred sin NAT no implica que el tráfico esté cifrado. Además, no debe suponerse que una NetworkPolicy aplicada a pods controla automáticamente todas las interfaces secundarias de una máquina virtual.
+
+## Inspección básica
+
+Consultar los recursos de red:
+
+```bash
+kubectl get network-attachment-definitions -A
+kubectl get subnets.kubeovn.io
+kubectl get vpcs.kubeovn.io
+kubectl get networkpolicies -A
+```
+
+Inspeccionar una definición de red o una subred concreta:
+
+```bash
+kubectl get network-attachment-definition <nad> -n <namespace> -o yaml
+kubectl get subnet <subnet> -o yaml
+```
+
+Revisar una política de red:
+
+```bash
+kubectl describe networkpolicy <policy> -n <namespace>
+kubectl get networkpolicy <policy> -n <namespace> -o yaml
+```
+
+Al interpretar una NetworkPolicy, comprueba especialmente:
+
+- **podSelector:** identifica los pods a los que se aplica la política.
+- **policyTypes:** indica si la política regula tráfico de entrada, de salida o ambos.
+- **ingress:** define las reglas de tráfico entrante.
+- **egress:** define las reglas de tráfico saliente.
+
+Una política que solo declara `Ingress` no debe describirse como una política que bloquea también el tráfico de salida. El comportamiento efectivo depende, además, de que el CNI implemente NetworkPolicy.
+
+## Diseño de conectividad
+
+Antes de crear o modificar redes, define:
+
+1. Qué máquinas virtuales o cargas necesitan conectividad.
+2. Qué redes e interfaces necesita cada máquina virtual.
+3. Los rangos IP, gateways, DNS y rutas necesarios.
+4. Si se requiere comunicación entre subredes o acceso externo.
+5. Si se utilizará NAT y qué flujos deben permitirse.
+6. Qué mecanismos aplicarán el aislamiento y cómo se comprobarán.
+
+Mantén separados los requisitos de conectividad y los de seguridad. La segmentación de red reduce el alcance de las comunicaciones, pero debe complementarse con controles adecuados para los servicios y sistemas invitados.
+
+## Validación del aislamiento
+
+La validación debe basarse en pruebas de conectividad desde los orígenes y destinos relevantes:
+
+- Comprobar la dirección IP y la configuración de cada interfaz.
+- Verificar rutas, gateways y resolución DNS.
+- Probar los flujos que deben estar permitidos.
+- Comprobar que los flujos no autorizados quedan bloqueados.
+- Revisar las reglas del CNI y el ámbito real de aplicación de las políticas.
+- Repetir las pruebas para cada interfaz de red de la máquina virtual.
+
+El estado `Ready` de una máquina virtual confirma una condición de su ciclo de vida, pero no demuestra que la conectividad o el aislamiento de red sean correctos.
+
+## Referencias
+
+- [SUSE Virtualization — Cluster Network](https://documentation.suse.com/cloudnative/virtualization/latest/en/networking/cluster-network.html)
+- [Kubernetes — Network Policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/)
+- [Kube-OVN — Documentation](https://kube-ovn.readthedocs.io/)

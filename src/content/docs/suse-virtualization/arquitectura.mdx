@@ -1,0 +1,67 @@
+---
+title: Arquitectura de SUSE Virtualization
+description: Componentes principales y funcionamiento de Harvester, Kubernetes, KubeVirt, Longhorn y las redes virtualizadas.
+---
+
+![Arquitectura de SUSE Virtualization](/arquitectura-suse-virtualization.png)
+
+SUSE Virtualization, conocido como Harvester, es una plataforma de infraestructura hiperconvergente (HCI) basada en Kubernetes. Permite ejecutar y gestionar máquinas virtuales sobre servidores físicos, integrando virtualización, almacenamiento y redes en una misma plataforma.
+
+## Componentes principales
+
+| Componente | Función |
+|---|---|
+| Kubernetes / RKE2 | Orquesta los componentes y recursos del clúster. |
+| KubeVirt | Integra las máquinas virtuales en la API y el modelo operativo de Kubernetes. |
+| KVM / QEMU | Proporciona la tecnología de virtualización utilizada para ejecutar las máquinas virtuales. |
+| Longhorn | Proporciona almacenamiento persistente distribuido y gestión de réplicas. |
+| Multus | Permite conectar pods y máquinas virtuales a interfaces de red adicionales. |
+| Kube-OVN | Proporciona redes virtualizadas, subredes y conectividad para las cargas. |
+| Rancher Prime | Facilita la gestión centralizada de clústeres, usuarios, roles y cargas Kubernetes. |
+
+Estos componentes trabajan de forma integrada. Kubernetes gestiona los recursos del clúster; KubeVirt incorpora las máquinas virtuales a ese modelo; Longhorn proporciona almacenamiento persistente y los componentes de red conectan las cargas a las redes necesarias.
+
+La interfaz de SUSE Virtualization se utiliza para administrar la infraestructura virtualizada. Rancher Prime amplía las capacidades de gestión a nivel de clúster y flota.
+
+## Inspección desde Kubernetes
+
+Con el kubeconfig correspondiente al clúster, se pueden consultar los nodos, las máquinas virtuales y el almacenamiento:
+
+```bash
+kubectl get nodes -o wide
+kubectl get virtualmachines -A
+kubectl get virtualmachineinstances -A -o wide
+kubectl get storageclasses
+```
+
+Para consultar un recurso concreto:
+
+```bash
+kubectl describe virtualmachine <vm> -n <namespace>
+kubectl get virtualmachine <vm> -n <namespace> -o yaml
+```
+
+Sustituye `<vm>` y `<namespace>` por el nombre y el espacio de nombres correspondientes.
+
+Los manifiestos completos pueden contener información sensible, como anotaciones, variables, configuración cloud-init o referencias a secretos. Revisa y oculta esos datos antes de compartir una salida.
+
+## Estado de los nodos y planificación
+
+Kubernetes utiliza el estado de los nodos para determinar dónde puede ejecutar nuevas cargas. Un nodo en estado `Ready` está disponible desde el punto de vista de las condiciones básicas del clúster, pero puede estar acordonado (`SchedulingDisabled`).
+
+Cuando un nodo está acordonado, el scheduler normalmente no programa nuevos pods en él. Los pods que ya se ejecutan pueden continuar funcionando. Esta situación reduce las ubicaciones disponibles para nuevas cargas y puede afectar a la distribución de las réplicas de almacenamiento.
+
+Para comprobar el estado y la posibilidad de programación:
+
+```bash
+kubectl get nodes
+kubectl describe node <node>
+```
+
+Conviene distinguir entre el estado general del nodo, sus condiciones de recursos y su disponibilidad para recibir nuevas cargas.
+
+## Referencias
+
+- [SUSE Virtualization — Overview](https://documentation.suse.com/cloudnative/virtualization/latest/en/introduction/overview.html)
+- [SUSE Virtualization — Create a VM](https://documentation.suse.com/cloudnative/virtualization/latest/en/virtual-machines/create-vm.html)
+- [Kubernetes — Nodes](https://kubernetes.io/docs/concepts/architecture/nodes/)

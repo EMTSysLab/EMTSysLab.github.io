@@ -1,0 +1,94 @@
+---
+title: Despliegues escalables con plantillas
+description: Buenas prácticas para versionar plantillas y aprovisionar grupos de máquinas virtuales.
+---
+
+Las plantillas permiten estandarizar la configuración de las máquinas virtuales. Cuando se necesitan varias instancias con características similares, ayudan a reducir las diferencias entre despliegues y facilitan el mantenimiento de una configuración común.
+
+Este artículo amplía el uso básico de plantillas explicado en [Plantillas, aprovisionamiento y migración de VMs](./maquinas-virtuales) y se centra en la planificación de despliegues repetibles.
+
+## Versionado de plantillas
+
+Una plantilla puede disponer de distintas versiones. Mantener versiones identificables permite controlar qué configuración se utiliza en cada despliegue y evita que una modificación posterior altere de forma inesperada la referencia de una nueva VM.
+
+Antes de utilizar una versión, revisa:
+
+- CPU y memoria asignadas.
+- Discos, tamaño y clase de almacenamiento.
+- Imágenes y versión del sistema operativo.
+- Interfaces de red y redes adicionales.
+- Parámetros de inicialización, como cloud-init.
+- Secretos, credenciales y otras dependencias externas.
+
+Consultas de inventario:
+
+```bash
+kubectl get virtualmachinetemplates -A
+kubectl get virtualmachinetemplateversions -A
+```
+
+La disponibilidad de una plantilla no garantiza que todas sus dependencias estén disponibles en el espacio de nombres o clúster donde se creará la VM.
+
+## Organización mediante etiquetas
+
+Las etiquetas de Kubernetes permiten clasificar recursos por entorno, aplicación, equipo o función. Los selectores permiten consultar grupos de máquinas virtuales que comparten una etiqueta.
+
+Por ejemplo, para consultar las VMs etiquetadas para un entorno de producción:
+
+```bash
+kubectl get virtualmachines -A -l environment=production
+```
+
+Los nombres de las etiquetas deben responder a una convención estable y documentada. Evita utilizar etiquetas ambiguas o reutilizar una misma clave con significados diferentes.
+
+Las etiquetas ayudan a organizar y seleccionar recursos; no sustituyen la definición de la plantilla ni configuran por sí mismas la capacidad, el almacenamiento o la red de las máquinas virtuales.
+
+## Planificación de un despliegue múltiple
+
+Antes de crear varias VMs, define el resultado esperado y valida los recursos necesarios.
+
+1. Selecciona la plantilla y una versión concreta.
+2. Comprueba que las imágenes, redes, secretos y clases de almacenamiento están disponibles.
+3. Calcula la demanda total de CPU, memoria y almacenamiento.
+4. Revisa las restricciones de scheduling y la distribución entre nodos.
+5. Define etiquetas coherentes para identificar las instancias.
+6. Despliega de forma gradual cuando el volumen de recursos pueda afectar al clúster.
+7. Comprueba el estado de cada VM y de sus dependencias.
+
+Un despliegue aceptado por la API no significa que todas las máquinas virtuales hayan terminado de aprovisionarse. La planificación puede quedar pendiente si no hay recursos suficientes o si alguna dependencia no está disponible.
+
+## Validación posterior
+
+Utiliza consultas para comprobar el conjunto de recursos y después inspecciona las instancias que no alcancen el estado esperado:
+
+```bash
+kubectl get virtualmachines -A
+kubectl get virtualmachineinstances -A -o wide
+kubectl get pvc -A
+kubectl get pods -A
+kubectl get events -A --sort-by=.lastTimestamp
+```
+
+Para filtrar por una etiqueta:
+
+```bash
+kubectl get virtualmachines -A -l environment=production
+```
+
+Si una VM no se inicia, revisa sus condiciones, eventos, volúmenes y requisitos de planificación antes de modificar la plantilla. Así se evita cambiar una configuración compartida para resolver un problema que puede ser específico de una instancia.
+
+## Buenas prácticas
+
+- Mantén una plantilla base por perfil de carga y versiona los cambios.
+- Fija la versión utilizada en cada despliegue.
+- Separa los parámetros comunes de los valores específicos de cada instancia.
+- No incluyas contraseñas ni tokens directamente en plantillas o repositorios.
+- Comprueba la capacidad total antes de aprovisionar un grupo de VMs.
+- Despliega por lotes cuando sea necesario controlar el consumo de recursos.
+- Registra las etiquetas y convenciones utilizadas para facilitar la operación.
+
+## Referencias
+
+- [SUSE Virtualization — Create a VM](https://documentation.suse.com/cloudnative/virtualization/latest/en/virtual-machines/create-vm.html)
+- [Kubernetes — Labels and Selectors](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/)
+- [Kubernetes — Resource Management for Pods and Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/)

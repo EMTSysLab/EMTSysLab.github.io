@@ -1,0 +1,77 @@
+---
+title: Almacenamiento distribuido con Longhorn
+description: Conceptos básicos de PVC, PV, StorageClass, réplicas y diagnóstico de almacenamiento en SUSE Virtualization.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+![Almacenamiento distribuido con Longhorn](/almacenamiento-longhorn.png)
+
+Longhorn proporciona almacenamiento persistente distribuido para cargas de Kubernetes. Una aplicación solicita almacenamiento mediante un PersistentVolumeClaim (PVC). Kubernetes utiliza una StorageClass para determinar cómo se aprovisiona el volumen persistente (PV), y Longhorn gestiona sus réplicas en los nodos del clúster.
+
+## Conceptos principales
+
+- **PersistentVolumeClaim (PVC):** solicitud de almacenamiento realizada por una aplicación.
+- **PersistentVolume (PV):** recurso que representa el almacenamiento asignado a una solicitud.
+- **StorageClass:** define cómo se aprovisiona el volumen, por ejemplo, el número de réplicas y la política de reclamación.
+- **Réplica:** copia de los datos del volumen que Longhorn mantiene en un disco de un nodo.
+- **CSI:** interfaz que permite a Kubernetes aprovisionar y utilizar volúmenes mediante un proveedor de almacenamiento.
+
+El número de réplicas determina cuántas copias de los datos intenta mantener Longhorn. Por ejemplo, un volumen de 20 GiB con tres réplicas requiere planificar hasta 60 GiB de capacidad provisionada en conjunto. Esta cifra no equivale necesariamente al espacio físico ocupado, que depende de los datos escritos y de otros elementos como snapshots y metadatos.
+
+Las réplicas mejoran la disponibilidad frente al fallo de un nodo o disco, según su distribución, pero no sustituyen a las copias de seguridad. Todas pertenecen al mismo sistema de almacenamiento y pueden compartir un dominio de fallo.
+
+## Inspección básica
+
+Consultar las clases de almacenamiento, las solicitudes y los volúmenes:
+
+```bash
+kubectl get storageclass
+kubectl get pvc -A -o wide
+kubectl get pv
+kubectl -n longhorn-system get volumes.longhorn.io -o wide
+kubectl -n longhorn-system get replicas.longhorn.io -o wide
+kubectl -n longhorn-system get nodes.longhorn.io
+```
+
+Para revisar un volumen concreto:
+
+```bash
+kubectl -n longhorn-system get volumes.longhorn.io <volume> -o yaml
+kubectl -n longhorn-system get replicas.longhorn.io -l longhornvolume=<volume> -o wide
+kubectl -n longhorn-system get events --sort-by=.lastTimestamp
+```
+
+Sustituye `<volume>` por el nombre del recurso Longhorn. Para relacionar un PVC con su volumen, consulta el campo `VOLUME` del PVC y comprueba también su `storageClassName`.
+
+## Interpretación de estados
+
+- **attached:** el volumen está conectado a un nodo.
+- **detached:** el volumen no está conectado actualmente a un nodo.
+- **healthy:** el volumen dispone del número de réplicas requerido y se encuentra en estado saludable.
+- **degraded:** el volumen no dispone de todas las réplicas esperadas o presenta una condición que afecta a su redundancia.
+- **unknown:** Longhorn no puede determinar con normalidad el estado de robustez del volumen.
+
+Un volumen `attached` no tiene por qué estar `healthy`: puede estar disponible para la carga y, al mismo tiempo, tener menos réplicas activas de las configuradas. Del mismo modo, `detached` no significa necesariamente que los datos se hayan perdido.
+
+## Diagnóstico de planificación
+
+Cuando Longhorn no puede crear una réplica, revisa:
+
+1. El número de réplicas configurado en la StorageClass y en el volumen.
+2. El estado de los nodos y si admiten nuevas cargas.
+3. La disponibilidad y capacidad de los discos configurados en Longhorn.
+4. Las etiquetas, selectores y reglas de distribución de réplicas.
+5. La condición `Scheduled`, su mensaje y los eventos relacionados.
+
+Los nodos pueden estar preparados para ejecutar cargas de Kubernetes y, aun así, no admitir nuevas réplicas si están acordonados o si Longhorn no los considera programables. También puede haber restricciones de disco o capacidad. Es importante distinguir entre el estado del nodo, el estado del disco y el estado de programación de Longhorn.
+
+<Aside type="caution" title="Precaución antes de intervenir">
+No elimines réplicas, fuerces la desconexión de un volumen ni cambies el número de réplicas como primera medida. Antes de intervenir, identifica el estado del volumen, las réplicas disponibles y las copias de seguridad existentes. Sigue el procedimiento de recuperación correspondiente a la versión instalada.
+</Aside>
+
+## Referencias
+
+- [SUSE Storage — Concepts](https://documentation.suse.com/cloudnative/storage/latest/en/introduction/concepts.html)
+- [Longhorn — Concepts](https://longhorn.io/docs/)
+- [Kubernetes — Persistent Volumes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/)
