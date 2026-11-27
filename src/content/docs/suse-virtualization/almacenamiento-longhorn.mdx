@@ -1,0 +1,76 @@
+---
+title: Almacenamiento distribuido con Longhorn
+description: PVC, PV, StorageClass, réplicas y diagnóstico de volúmenes en SUSE Virtualization.
+---
+
+# Almacenamiento distribuido con Longhorn
+
+Longhorn proporciona almacenamiento persistente distribuido. En Kubernetes, una aplicación suele solicitar capacidad mediante un PersistentVolumeClaim (PVC); el provisionador CSI crea o enlaza el PersistentVolume (PV), aplicando los parámetros de una StorageClass.
+
+## Modelo de almacenamiento
+
+- **PVC:** solicitud de almacenamiento de una carga.
+- **PV:** recurso que representa el volumen provisionado.
+- **StorageClass:** define parámetros de provisión, como el número de réplicas y la política de reclamación.
+- **Réplica:** copia de los datos del volumen mantenida por Longhorn en un disco/nodo.
+- **CSI:** interfaz mediante la que Kubernetes consume el almacenamiento.
+
+El número de réplicas afecta al consumo físico. Como aproximación, un volumen lógico de 20 GiB con tres réplicas puede consumir hasta unos 60 GiB antes de considerar metadatos, snapshots, compresión y espacio real utilizado. Las réplicas no son copias de seguridad: pertenecen al mismo sistema de almacenamiento y comparten su dominio de fallo.
+
+## Inspección
+
+```bash
+kubectl get storageclass
+kubectl get pvc -A -o wide
+kubectl get pv
+kubectl get volumes.longhorn.io -A -o wide
+kubectl get replicas.longhorn.io -A -o wide
+```
+
+Para un volumen con problemas:
+
+```bash
+kubectl -n longhorn-system get volumes.longhorn.io <volume> -o yaml
+kubectl -n longhorn-system get replicas.longhorn.io -l longhornvolume=<volume> -o wide
+kubectl describe node <node>
+```
+
+Revisar, como mínimo, `spec.numberOfReplicas`, `status.state`, `status.robustness`, condiciones `Scheduled`, `ReplicaSchedulingFailure`, estado de las réplicas y eventos asociados.
+
+## Evidencia del laboratorio (27/11/2026)
+
+Se observaron dos StorageClasses relevantes:
+
+| StorageClass | Réplicas | Observación |
+|---|---:|---|
+| `harvester-longhorn` | 3 | StorageClass predeterminada. |
+| `harvester-longhorn-1rep` | 1 | Existía en el clúster; no se demostró que los PVC inspeccionados la utilizaran. |
+
+La existencia de una StorageClass no demuestra que se haya aplicado a una carga. Hay que comprobar el campo `storageClassName` del PVC y el PV asociado.
+
+En el inventario final se detectaron los siguientes estados:
+
+| PVC | Estado del volumen | Hallazgo |
+|---|---|---|
+| `prod/core-services-disk-0` | attached / degraded | Solicitaba tres réplicas; Longhorn notificó `ReplicaSchedulingFailure`. La VM `core-services` seguía Running. |
+| `cattle-monitoring-system/rancher-monitoring-grafana` | attached / degraded | Solicitaba tres réplicas; el prechequeo notificó `disks are unavailable`. |
+| `prod/the-engine-01-disk-0-dnie1` | detached / unknown | El workload asociado figuraba como `Succeeded`; el nodo de adjunción estaba vacío. |
+| `prod/the-engine-01-market-data-vol-pkbv6` | detached / unknown | El workload asociado figuraba como `Succeeded`; el nodo de adjunción estaba vacío. |
+
+Los dos volúmenes de `the-engine-01` estaban desmontados y con robustez desconocida. Ese estado no permite afirmar que estén sanos ni que los datos sean recuperables. Tampoco demuestra por sí solo que exista pérdida de datos.
+
+## Diagnóstico de planificación
+
+En la misma captura, `harvester2` estaba Ready, pero acordonado mediante `SchedulingDisabled` y el taint `node.kubernetes.io/unschedulable:NoSchedule`. `harvester1` y `harvester3` admitían programación.
+
+La disponibilidad de discos, espacio, etiquetas, selectores, anti-affinity y estado de los nodos puede afectar a la creación de réplicas. El estado observado no permite atribuir todos los fallos a un único factor. Antes de intervenir, correlacionar las condiciones del volumen con las réplicas, discos, nodos y eventos.
+
+<Aside type="caution" title="No reparar a ciegas">
+No borrar réplicas, forzar detach, cambiar el número de réplicas ni eliminar PVC/PV como primera medida. Primero preservar el estado, identificar la copia válida y revisar las instrucciones de recuperación de la versión desplegada.
+</Aside>
+
+## Referencias
+
+- [SUSE Storage — Concepts](https://documentation.suse.com/cloudnative/storage/latest/en/introduction/concepts.html)
+- [Longhorn — Concepts](https://longhorn.io/docs/)
+- [Kubernetes — Persistent Volumes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/)
