@@ -1,0 +1,79 @@
+---
+title: Alta disponibilidad y mantenimiento de nodos
+description: Conceptos de disponibilidad, evacuación y mantenimiento de nodos en SUSE Virtualization.
+---
+
+# Alta disponibilidad y mantenimiento de nodos
+
+La alta disponibilidad busca reducir el impacto de los fallos de infraestructura sobre las cargas de trabajo. En SUSE Virtualization intervienen varios niveles: la disponibilidad de los nodos, la planificación de Kubernetes, el almacenamiento persistente y los mecanismos de recuperación de las máquinas virtuales.
+
+Es importante distinguir entre **migración en vivo**, **evacuación planificada** y **recuperación ante un fallo**. Son operaciones relacionadas, pero no equivalentes.
+
+## Conceptos principales
+
+- **Alta disponibilidad (HA):** conjunto de mecanismos que permiten recuperar cargas cuando falla un componente, siempre que la plataforma disponga de recursos y configuración adecuados.
+- **Migración en vivo:** traslado planificado de una VM en ejecución entre nodos compatibles. Se describe en [Plantillas, aprovisionamiento y migración de VMs](./maquinas-virtuales).
+- **Evacuación de un nodo:** movimiento o reubicación de las cargas antes de realizar tareas de mantenimiento en ese nodo.
+- **Acordonamiento (*cordon*):** impide que Kubernetes programe nuevas cargas en un nodo. No detiene por sí mismo las cargas que ya se están ejecutando.
+- **Drenaje (*drain*):** solicita la desalojación de pods de un nodo, respetando las restricciones aplicables. No debe tratarse como un sustituto automático del procedimiento de mantenimiento de máquinas virtuales de Harvester.
+
+## Mantenimiento planificado
+
+Antes de intervenir en un nodo, es necesario conocer qué cargas aloja y comprobar que el resto del clúster puede asumirlas. La operación debe seguir el procedimiento de mantenimiento admitido por la versión y configuración de SUSE Virtualization.
+
+Como comprobación inicial, consulta los nodos y las máquinas virtuales:
+
+```bash
+kubectl get nodes -o wide
+kubectl describe node <node>
+kubectl get virtualmachines -A
+kubectl get virtualmachineinstances -A -o wide
+```
+
+Revisa también la capacidad disponible, las restricciones de ubicación, las redes y el estado de los volúmenes persistentes. La posibilidad de mover una VM depende de sus requisitos y de los recursos disponibles en el destino.
+
+## Recuperación ante fallos
+
+La recuperación automática no debe confundirse con una migración en vivo. Ante la pérdida de un nodo, la plataforma debe detectar la incidencia y aplicar los mecanismos de recuperación configurados. El tiempo y el resultado dependen, entre otros factores, de:
+
+- La detección del fallo y el estado de control del clúster.
+- La disponibilidad de nodos alternativos.
+- La capacidad de CPU y memoria del destino.
+- La accesibilidad e integridad del almacenamiento persistente.
+- Las políticas de alta disponibilidad y las restricciones de scheduling.
+- La conectividad de red necesaria para volver a ejecutar la carga.
+
+Que una VM pueda migrarse de forma planificada no demuestra por sí solo que vaya a recuperarse automáticamente ante cualquier fallo.
+
+## Comprobaciones
+
+Durante una revisión operativa, consulta los estados y eventos relacionados:
+
+```bash
+kubectl get nodes
+kubectl get virtualmachines -A
+kubectl get virtualmachineinstances -A -o wide
+kubectl get virtualmachineinstancemigrations -A
+kubectl get pods -A
+kubectl get events -A --sort-by=.lastTimestamp
+```
+
+Interpreta los resultados de forma conjunta. Un nodo puede estar en estado `Ready` y, al mismo tiempo, estar acordonado (`SchedulingDisabled`). Del mismo modo, el estado de un recurso VM no sustituye la comprobación del sistema operativo invitado ni de la aplicación.
+
+## Buenas prácticas
+
+1. Planifica el mantenimiento y comprueba previamente la capacidad de los nodos restantes.
+2. Verifica las réplicas y la disponibilidad del almacenamiento antes de mover cargas.
+3. Comprueba las restricciones de scheduling y las dependencias de red.
+4. Utiliza el procedimiento de mantenimiento de SUSE Virtualization adecuado a la versión instalada.
+5. Valida la VM, el sistema operativo y la aplicación después de la operación.
+6. No consideres una migración correcta como una prueba completa de tolerancia a fallos.
+
+Las pruebas de pérdida de nodo o recuperación deben realizarse únicamente en un entorno controlado y con un procedimiento aprobado. No se deben provocar fallos en un clúster compartido o productivo para comprobar su comportamiento.
+
+## Referencias
+
+- [SUSE Virtualization — Documentation](https://documentation.suse.com/cloudnative/virtualization/latest/en/introduction/overview.html)
+- [SUSE Virtualization — Live Migration](https://documentation.suse.com/cloudnative/virtualization/latest/en/virtual-machines/live-migration.html)
+- [Kubernetes — Safely Drain a Node](https://kubernetes.io/docs/tasks/administer-cluster/safely-drain-node/)
+- [Kubernetes — Nodes](https://kubernetes.io/docs/concepts/architecture/nodes/)
