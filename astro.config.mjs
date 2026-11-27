@@ -132,13 +132,6 @@ export default defineConfig({
           ],
         },
         {
-          label: 'Automatización & Scripting',
-          badge: { text: 'Próximamente', variant: 'caution' },
-          items: [
-            { label: 'Próximamente...', link: '#' },
-          ],
-        },
-        {
           label: 'SysAdmin Toolkit',
           items: [
             {
@@ -147,6 +140,13 @@ export default defineConfig({
                 { label: 'Adagios — Nagios y NRPE', slug: 'toolkit/monitorizacion/adagios-nagios-nrpe' },
               ],
             },
+          ],
+        },
+        {
+          label: 'Automatización & Scripting',
+          badge: { text: 'Próximamente', variant: 'caution' },
+          items: [
+            { label: 'Próximamente...', link: '#' },
           ],
         },
       ],
