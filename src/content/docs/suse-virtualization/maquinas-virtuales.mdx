@@ -1,0 +1,56 @@
+---
+title: Plantillas, aprovisionamiento y migración de VMs
+description: Uso de plantillas versionadas, escalado de instancias y comprobación de migraciones en Harvester.
+---
+
+# Plantillas, aprovisionamiento y migración de VMs
+
+Las plantillas permiten reutilizar una configuración base de VM. Su utilidad principal es reducir la configuración manual repetitiva. No eliminan las diferencias que pueden aparecer después del despliegue ni garantizan que todas las instancias arranquen correctamente.
+
+## Plantillas y versiones
+
+En el laboratorio se observó la plantilla `prod/prod-basic` y una versión identificada como `prod-basic-8brwl`, versión 1.
+
+Comprobar los recursos de plantilla mediante:
+
+```bash
+kubectl get virtualmachinetemplates -A
+kubectl get virtualmachinetemplateversions -A
+```
+
+Antes de exportar o reutilizar manifiestos, revisar los campos generados por el sistema y las referencias a secretos, claves y cloud-init. Un YAML exportado desde un recurso vivo no necesariamente es un manifiesto limpio y portable para aplicar en otro clúster.
+
+## Aprovisionamiento de varias instancias
+
+Una plantilla puede acelerar la creación de varias VMs, pero cada instancia necesita recursos de cómputo, almacenamiento y red disponibles. El hecho de que una solicitud de despliegue cree objetos VM o PVC no significa que todas las instancias alcancen estado Running.
+
+En los eventos del laboratorio se observó que las instancias `appcluster-01` y `appcluster-02` iniciaron el proceso de aprovisionamiento. La provisión de volúmenes llegó a completarse para algunos recursos, pero `appcluster-02` encontró un error de volumen no preparado para workloads y `appcluster-01` terminó detenida y eliminada. No hay evidencia de que ambas instancias llegaran a Running simultáneamente. Por tanto, este ejercicio demuestra un intento de escalado y la importancia de comprobar el resultado, no un escalado satisfactorio.
+
+## Live Migration
+
+La migración en vivo mueve una VM en ejecución entre nodos compatibles. Requiere que el destino pueda alojarla y que se cumplan las condiciones de CPU, recursos, almacenamiento, red y reglas de planificación.
+
+Inspeccionar las migraciones:
+
+```bash
+kubectl get virtualmachineinstancemigrations -A
+kubectl describe virtualmachineinstancemigration <migration> -n <namespace>
+kubectl get virtualmachineinstances -A -o wide
+```
+
+En una sesión del laboratorio se observaron dos objetos de migración de `webserver-prod` con estado `Succeeded` y condición `Completed=True`. Posteriormente, el inventario final ya no listaba esos objetos. La consulta SSH posterior alcanzó la VM y devolvió su hostname y uptime, pero no se conservó una comparación de uptime previa ni evidencia suficiente para cuantificar interrupción o confirmar el nodo origen/destino.
+
+Una migración completada no demuestra alta disponibilidad, tolerancia a cualquier fallo ni ausencia de downtime. Tampoco equivale a evacuar correctamente todos los workloads durante una pérdida inesperada de nodo.
+
+## Consideraciones operativas
+
+- Evitar fijar una VM a un único nodo si se espera migrarla a otros nodos.
+- Comprobar capacidad real y restricciones de scheduling antes de desplegar.
+- Validar estado de VMI, red y almacenamiento después de la operación.
+- Distinguir `Ready` de la VM, salud del guest y salud de la aplicación.
+- Registrar eventos y tiempos antes de concluir que una operación fue transparente.
+
+## Referencias
+
+- [SUSE Virtualization — Create a VM](https://documentation.suse.com/cloudnative/virtualization/latest/en/virtual-machines/create-vm.html)
+- [SUSE Virtualization — Live Migration](https://documentation.suse.com/cloudnative/virtualization/latest/en/virtual-machines/live-migration.html)
