@@ -26,6 +26,7 @@ export default defineConfig({
         catppuccin({ defaultFlavour: 'mocha' }),
       ],
       customCss: ['./src/styles/global.css'],
+      routeMiddleware: './src/routeData.ts',
       sidebar: [
         {
           label: 'SUSE Virtualization',
