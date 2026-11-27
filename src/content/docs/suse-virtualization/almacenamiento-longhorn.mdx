@@ -61,7 +61,7 @@ Entre los volúmenes inspeccionados se observaron estos estados:
 | `cattle-monitoring-system/prometheus-rancher-monitoring-prometheus-db-prometheus-rancher-monitoring-prometheus-0` | attached / degraded | 2 running | La StorageClass solicita tres réplicas. |
 | `cattle-monitoring-system/rancher-monitoring-grafana` | attached / degraded | 2 running | Solicitaba tres réplicas; la condición `Scheduled` registró `ReplicaSchedulingFailure` y el mensaje `precheck new replica failed: disks are unavailable`. |
 | `prod/core-services-disk-0` | attached / degraded | 2 running, 1 stopped | Solicitaba tres réplicas; la condición `Scheduled` registró `ReplicaSchedulingFailure`. La VM `core-services` seguía Running. |
-| `prod/restore-webserver-prod-d7dfd3e5-346a-40dc-a6ea-dcc33d3ba14f-disk-0` | attached / degraded | 2 running | La StorageClass solicita tres réplicas. |
+| `prod/restore-webserver-prod-d7dfd3e5-346a-40dc-a6ea-dcc33d3ba14f-disk-0` | attached / degraded | 2 running | Se observaban dos réplicas en ejecución; no se verificó aquí el parámetro de réplicas de su StorageClass. |
 | `prod/the-engine-01-disk-0-dnie1` | detached / unknown | 3 stopped | El workload asociado figuraba como `Succeeded`; el nodo de adjunción estaba vacío. |
 | `prod/the-engine-01-market-data-vol-pkbv6` | detached / unknown | 3 stopped | El workload asociado figuraba como `Succeeded`; el nodo de adjunción estaba vacío. |
 
