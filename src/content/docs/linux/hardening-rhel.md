@@ -239,7 +239,7 @@ lvextend -r -L +5G /dev/rhel_vg/lv_var
 
 La opción -r solicita que también se redimensione el sistema de archivos.
 
-Si se utiliza XFS, también es posible ampliar el sistema de archivos de forma explícita:
+Si el volumen lógico está montado en `/var`, como en el esquema de ejemplo, también es posible ampliar el sistema de archivos de forma explícita. `xfs_growfs` debe recibir el punto de montaje real del sistema de archivos; si se ha montado temporalmente en otra ruta, utiliza esa ruta en lugar de `/var`.
 
 ~~~bash
 lvextend -L +5G /dev/rhel_vg/lv_var
