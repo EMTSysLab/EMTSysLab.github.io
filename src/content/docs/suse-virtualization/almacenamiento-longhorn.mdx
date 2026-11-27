@@ -1,82 +1,73 @@
 ---
 title: Almacenamiento distribuido con Longhorn
-description: PVC, PV, StorageClass, réplicas y diagnóstico de volúmenes en SUSE Virtualization.
+description: Conceptos básicos de PVC, PV, StorageClass, réplicas y diagnóstico de almacenamiento en SUSE Virtualization.
 ---
 
 import { Aside } from '@astrojs/starlight/components';
 
 # Almacenamiento distribuido con Longhorn
 
-Longhorn proporciona almacenamiento persistente distribuido. En Kubernetes, una aplicación suele solicitar capacidad mediante un PersistentVolumeClaim (PVC); el provisionador CSI crea o enlaza el PersistentVolume (PV), aplicando los parámetros de una StorageClass.
+Longhorn proporciona almacenamiento persistente distribuido para cargas de Kubernetes. Una aplicación solicita almacenamiento mediante un PersistentVolumeClaim (PVC). Kubernetes utiliza una StorageClass para determinar cómo se aprovisiona el volumen persistente (PV), y Longhorn gestiona sus réplicas en los nodos del clúster.
 
-## Modelo de almacenamiento
+## Conceptos principales
 
-- **PVC:** solicitud de almacenamiento de una carga.
-- **PV:** recurso que representa el volumen provisionado.
-- **StorageClass:** define parámetros de provisión, como el número de réplicas y la política de reclamación.
-- **Réplica:** copia de los datos del volumen mantenida por Longhorn en un disco/nodo.
-- **CSI:** interfaz mediante la que Kubernetes consume el almacenamiento.
+- **PersistentVolumeClaim (PVC):** solicitud de almacenamiento realizada por una aplicación.
+- **PersistentVolume (PV):** recurso que representa el almacenamiento asignado a una solicitud.
+- **StorageClass:** define cómo se aprovisiona el volumen, por ejemplo, el número de réplicas y la política de reclamación.
+- **Réplica:** copia de los datos del volumen que Longhorn mantiene en un disco de un nodo.
+- **CSI:** interfaz que permite a Kubernetes aprovisionar y utilizar volúmenes mediante un proveedor de almacenamiento.
 
-El número de réplicas influye en la capacidad que Longhorn debe planificar. Como referencia, un volumen lógico de 20 GiB con tres réplicas representa hasta 60 GiB de capacidad provisionada entre las réplicas. Esta cifra no equivale necesariamente al espacio físico realmente ocupado: influyen los datos escritos, las snapshots, los metadatos y el comportamiento de asignación del almacenamiento. Las réplicas no son copias de seguridad: pertenecen al mismo sistema de almacenamiento y comparten su dominio de fallo.
+El número de réplicas determina cuántas copias de los datos intenta mantener Longhorn. Por ejemplo, un volumen de 20 GiB con tres réplicas requiere planificar hasta 60 GiB de capacidad provisionada en conjunto. Esta cifra no equivale necesariamente al espacio físico ocupado, que depende de los datos escritos y de otros elementos como snapshots y metadatos.
 
-## Inspección
+Las réplicas mejoran la disponibilidad frente al fallo de un nodo o disco, según su distribución, pero no sustituyen a las copias de seguridad. Todas pertenecen al mismo sistema de almacenamiento y pueden compartir un dominio de fallo.
 
-```bash
+## Inspección básica
+
+Consultar las clases de almacenamiento, las solicitudes y los volúmenes:
+
+\`\`\`bash
 kubectl get storageclass
 kubectl get pvc -A -o wide
 kubectl get pv
 kubectl -n longhorn-system get volumes.longhorn.io -o wide
 kubectl -n longhorn-system get replicas.longhorn.io -o wide
-kubectl -n longhorn-system get nodes.longhorn.io -o yaml
-```
+kubectl -n longhorn-system get nodes.longhorn.io
+\`\`\`
 
-Para un volumen con problemas:
+Para revisar un volumen concreto:
 
-```bash
+\`\`\`bash
 kubectl -n longhorn-system get volumes.longhorn.io <volume> -o yaml
 kubectl -n longhorn-system get replicas.longhorn.io -l longhornvolume=<volume> -o wide
-kubectl -n longhorn-system get nodes.longhorn.io <node> -o yaml
-kubectl describe node <node>
-```
+kubectl -n longhorn-system get events --sort-by=.lastTimestamp
+\`\`\`
 
-En los recursos `nodes.longhorn.io`, revisar `spec.disks` y `status.diskStatus` para comprobar la configuración, disponibilidad y capacidad de los discos. En los volúmenes, revisar como mínimo `spec.numberOfReplicas`, `status.state`, `status.robustness`, la condición `Scheduled`, su razón y mensaje, el estado de las réplicas y los eventos asociados.
+Sustituye \`<volume>\` por el nombre del recurso Longhorn. Para relacionar un PVC con su volumen, consulta el campo \`VOLUME\` del PVC y comprueba también su \`storageClassName\`.
 
-## Evidencia del laboratorio (27/11/2026)
+## Interpretación de estados
 
-Se observaron varias StorageClasses. Las siguientes se inspeccionaron expresamente:
+- **attached:** el volumen está conectado a un nodo.
+- **detached:** el volumen no está conectado actualmente a un nodo.
+- **healthy:** el volumen dispone del número de réplicas requerido y se encuentra en estado saludable.
+- **degraded:** el volumen no dispone de todas las réplicas esperadas o presenta una condición que afecta a su redundancia.
+- **unknown:** Longhorn no puede determinar con normalidad el estado de robustez del volumen.
 
-| StorageClass | Réplicas | Observación |
-|---|---:|---|
-| `harvester-longhorn` | 3 | StorageClass predeterminada. |
-| `harvester-longhorn-1rep` | 1 | Disponible en el clúster; no se identificó entre los PVC enumerados. |
-| `lh-914e53bf-138d-4ecb-b249-515d2373ddcb` | 3 | Utilizada por el PVC `core-services-disk-0`; configura también un `backingImage`. |
-
-También aparecieron otras StorageClasses con prefijo `lh-`. La existencia de una StorageClass no demuestra que se haya aplicado a una carga: hay que comprobar `storageClassName` en el PVC y revisar los parámetros de la clase correspondiente.
-
-Entre los volúmenes inspeccionados se observaron estos estados:
-
-| PVC | Estado del volumen | Réplicas observadas | Hallazgo |
-|---|---|---:|---|
-| `cattle-monitoring-system/alertmanager-rancher-monitoring-alertmanager-db-alertmanager-rancher-monitoring-alertmanager-0` | attached / degraded | 2 running | La StorageClass solicita tres réplicas. |
-| `cattle-monitoring-system/prometheus-rancher-monitoring-prometheus-db-prometheus-rancher-monitoring-prometheus-0` | attached / degraded | 2 running | La StorageClass solicita tres réplicas. |
-| `cattle-monitoring-system/rancher-monitoring-grafana` | attached / degraded | 2 running | Solicitaba tres réplicas; la condición `Scheduled` registró `ReplicaSchedulingFailure` y el mensaje `precheck new replica failed: disks are unavailable`. |
-| `prod/core-services-disk-0` | attached / degraded | 2 running, 1 stopped | Solicitaba tres réplicas; la condición `Scheduled` registró `ReplicaSchedulingFailure`. La VM `core-services` seguía Running. |
-| `prod/restore-webserver-prod-d7dfd3e5-346a-40dc-a6ea-dcc33d3ba14f-disk-0` | attached / degraded | 2 running | Se observaban dos réplicas en ejecución; no se verificó aquí el parámetro de réplicas de su StorageClass. |
-| `prod/the-engine-01-disk-0-dnie1` | detached / unknown | 3 stopped | El workload asociado figuraba como `Succeeded`; el nodo de adjunción estaba vacío. |
-| `prod/the-engine-01-market-data-vol-pkbv6` | detached / unknown | 3 stopped | El workload asociado figuraba como `Succeeded`; el nodo de adjunción estaba vacío. |
-
-Los dos volúmenes de `the-engine-01` estaban desmontados y con robustez desconocida. Sus réplicas figuraban detenidas. Ese estado no permite afirmar que estén sanos ni que los datos sean recuperables; tampoco demuestra por sí solo que exista pérdida de datos.
+Un volumen \`attached\` no tiene por qué estar \`healthy\`: puede estar disponible para la carga y, al mismo tiempo, tener menos réplicas activas de las configuradas. Del mismo modo, \`detached\` no significa necesariamente que los datos se hayan perdido.
 
 ## Diagnóstico de planificación
 
-En la captura del 27/11/2026, los tres nodos Kubernetes estaban `Ready`, pero `harvester2` aparecía como `Ready,SchedulingDisabled`, con `spec.unschedulable=true` y el taint `node.kubernetes.io/unschedulable:NoSchedule`.
+Cuando Longhorn no puede crear una réplica, revisa:
 
-El recurso `nodes.longhorn.io/harvester2` confirmó la misma situación: la condición `Schedulable=False` indicaba `KubernetesNodeCordoned` y el mensaje `Node harvester2 is cordoned`. Sin embargo, el nodo Longhorn estaba `Ready=True`, y su disco `/var/lib/harvester/defaultdisk` figuraba `Ready=True` y `Schedulable=True`. Por tanto, la evidencia no apunta a un disco declarado no disponible en ese nodo, sino al acordonamiento del nodo Kubernetes, que impide a Longhorn programar nuevas réplicas allí. `harvester1` y `harvester3` admitían programación.
+1. El número de réplicas configurado en la StorageClass y en el volumen.
+2. El estado de los nodos y si admiten nuevas cargas.
+3. La disponibilidad y capacidad de los discos configurados en Longhorn.
+4. Las etiquetas, selectores y reglas de distribución de réplicas.
+5. La condición \`Scheduled\`, su mensaje y los eventos relacionados.
 
-Esta condición reduce las ubicaciones disponibles para nuevas réplicas y puede contribuir a que los volúmenes no alcancen el número configurado. No debe atribuirse automáticamente cualquier fallo de programación a una única causa: hay que correlacionar la condición `Scheduled` con los discos y su capacidad, las etiquetas y selectores, las reglas de anti-affinity, las réplicas existentes y los eventos. En particular, el mensaje `disks are unavailable` registrado para Grafana debe interpretarse junto con el estado de programación de nodos y discos, no como prueba aislada de una avería física.
+Los nodos pueden estar preparados para ejecutar cargas de Kubernetes y, aun así, no admitir nuevas réplicas si están acordonados o si Longhorn no los considera programables. También puede haber restricciones de disco o capacidad. Es importante distinguir entre el estado del nodo, el estado del disco y el estado de programación de Longhorn.
 
-<Aside type="caution" title="No reparar a ciegas">
-No borrar réplicas, forzar detach, cambiar el número de réplicas ni eliminar PVC/PV como primera medida. Primero preservar el estado, identificar la copia válida y revisar las instrucciones de recuperación de la versión desplegada.
+<Aside type="caution" title="Precaución antes de intervenir">
+No elimines réplicas, fuerces la desconexión de un volumen ni cambies el número de réplicas como primera medida. Antes de intervenir, identifica el estado del volumen, las réplicas disponibles y las copias de seguridad existentes. Sigue el procedimiento de recuperación correspondiente a la versión instalada.
 </Aside>
 
 ## Referencias
