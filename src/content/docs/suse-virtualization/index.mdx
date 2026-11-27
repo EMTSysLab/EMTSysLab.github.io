@@ -3,7 +3,7 @@ title: SUSE Virtualization — formación práctica
 description: Guía formativa sobre arquitectura, almacenamiento, redes, máquinas virtuales y operaciones en SUSE Virtualization.
 ---
 
-import { Card, CardGrid } from '@astrojs/starlight/components';
+import { Card } from '@astrojs/starlight/components';
 
 <div style="max-width: 960px; margin-inline: auto;">
 
@@ -19,68 +19,56 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 
   ### Fundamentos
 
-  <div style="max-width: 420px; margin-inline: auto;">
-    <CardGrid>
-      <Card title="Arquitectura y componentes" icon="puzzle" href="./arquitectura">
-        Conoce los componentes de la plataforma y su relación con Kubernetes.
-      </Card>
-    </CardGrid>
+  <div style="display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; width: 100%;">
+    <Card title="Arquitectura y componentes" icon="puzzle" href="./arquitectura">
+      Conoce los componentes de la plataforma y su relación con Kubernetes.
+    </Card>
   </div>
 
   ### Almacenamiento y protección
 
-  <div style="max-width: 720px; margin-inline: auto;">
-    <CardGrid>
-      <Card title="Almacenamiento con Longhorn" icon="setting" href="./almacenamiento-longhorn">
-        Volúmenes persistentes, réplicas, snapshots y almacenamiento distribuido.
-      </Card>
-      <Card title="Backup y restauración" icon="approve-check" href="./backup-restauracion">
-        Protege máquinas virtuales y aprende los conceptos de copia y recuperación.
-      </Card>
-    </CardGrid>
+  <div style="display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; width: 100%;">
+    <Card title="Almacenamiento con Longhorn" icon="setting" href="./almacenamiento-longhorn">
+      Volúmenes persistentes, réplicas, snapshots y almacenamiento distribuido.
+    </Card>
+    <Card title="Backup y restauración" icon="approve-check" href="./backup-restauracion">
+      Protege máquinas virtuales y aprende los conceptos de copia y recuperación.
+    </Card>
   </div>
 
   ### Redes
 
-  <div style="max-width: 420px; margin-inline: auto;">
-    <CardGrid>
-      <Card title="Redes y aislamiento" icon="puzzle" href="./redes">
-        Redes virtuales, Multus, Kube-OVN y aislamiento del tráfico.
-      </Card>
-    </CardGrid>
+  <div style="display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; width: 100%;">
+    <Card title="Redes y aislamiento" icon="puzzle" href="./redes">
+      Redes virtuales, Multus, Kube-OVN y aislamiento del tráfico.
+    </Card>
   </div>
 
   ### Máquinas virtuales
 
-  <div style="max-width: 720px; margin-inline: auto;">
-    <CardGrid>
-      <Card title="Plantillas, aprovisionamiento y migración" icon="rocket" href="./maquinas-virtuales">
-        Crea máquinas virtuales, trabaja con plantillas y comprende la migración en vivo.
-      </Card>
-      <Card title="Despliegues escalables" icon="setting" href="./despliegues-escalables">
-        Organiza despliegues de múltiples máquinas virtuales mediante plantillas y configuración reutilizable.
-      </Card>
-    </CardGrid>
+  <div style="display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; width: 100%;">
+    <Card title="Plantillas, aprovisionamiento y migración" icon="rocket" href="./maquinas-virtuales">
+      Crea máquinas virtuales, trabaja con plantillas y comprende la migración en vivo.
+    </Card>
+    <Card title="Despliegues escalables" icon="setting" href="./despliegues-escalables">
+      Organiza despliegues de múltiples máquinas virtuales mediante plantillas y configuración reutilizable.
+    </Card>
   </div>
 
   ### Operación y disponibilidad
 
-  <div style="max-width: 420px; margin-inline: auto;">
-    <CardGrid>
-      <Card title="Alta disponibilidad y mantenimiento" icon="approve-check" href="./alta-disponibilidad">
-        Comprende la disponibilidad de las cargas y las tareas de mantenimiento de nodos.
-      </Card>
-    </CardGrid>
+  <div style="display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; width: 100%;">
+    <Card title="Alta disponibilidad y mantenimiento" icon="approve-check" href="./alta-disponibilidad">
+      Comprende la disponibilidad de las cargas y las tareas de mantenimiento de nodos.
+    </Card>
   </div>
 
   ### Ecosistema
 
-  <div style="max-width: 420px; margin-inline: auto;">
-    <CardGrid>
-      <Card title="SUSE Application Collection" icon="open-book" href="./suse-application-collection">
-        Explora imágenes de contenedor, gráficos Helm y seguridad de la cadena de suministro.
-      </Card>
-    </CardGrid>
+  <div style="display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; width: 100%;">
+    <Card title="SUSE Application Collection" icon="open-book" href="./suse-application-collection">
+      Explora imágenes de contenedor, gráficos Helm y seguridad de la cadena de suministro.
+    </Card>
   </div>
 
   ## Cómo utilizar esta documentación
