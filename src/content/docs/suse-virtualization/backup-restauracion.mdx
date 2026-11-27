@@ -1,0 +1,64 @@
+---
+title: Backup y restauración de máquinas virtuales
+description: Diferencias entre snapshots, backups remotos, destinos Longhorn y restauraciones en Harvester.
+---
+
+# Backup y restauración de máquinas virtuales
+
+Una estrategia de protección de datos debe distinguir entre snapshots locales, backups almacenados fuera del clúster y restauraciones verificadas. No son mecanismos equivalentes.
+
+## Conceptos
+
+- **Snapshot:** punto de recuperación asociado al almacenamiento. Si permanece en el mismo clúster y dominio de fallo, no sustituye a una copia externa.
+- **VM Backup:** recurso de Harvester que registra la operación de backup de una máquina virtual y sus volúmenes compatibles.
+- **BackupTarget:** destino configurado para almacenar backups de Longhorn, por ejemplo un repositorio NFS o S3.
+- **ScheduleVMBackup:** política programada de backup de VM.
+- **Restore:** operación que crea o reemplaza una VM a partir de un backup disponible.
+
+La condición `ReadyToUse=True` indica que la API considera preparado el recurso de backup/snapshot. No acredita por sí sola que exista una copia externa, que sea independiente del clúster o que la aplicación pueda recuperarse correctamente.
+
+## Inspección de solo lectura
+
+```bash
+kubectl get virtualmachinebackups -A -o wide
+kubectl get schedulevmbackups -A -o wide
+kubectl get virtualmachinerestores -A -o wide
+
+kubectl -n longhorn-system get backuptargets.longhorn.io -o wide
+kubectl -n longhorn-system get backuptargets.longhorn.io default -o yaml
+kubectl get volumeremotebackups -A -o wide
+kubectl get volumeremoterestores -A -o wide
+```
+
+Al inspeccionar YAML completos, no publicarlos sin revisión. Los metadatos de VM pueden incorporar configuración cloud-init, claves SSH, hashes de credenciales y otros datos sensibles.
+
+## Evidencia observada
+
+En el laboratorio del 27/11/2026:
+
+- `prod/pre-disaster-backup` era un recurso de backup de `core-services`, de tipo `snapshot`, con `ReadyToUse: true`.
+- Existía una restauración `prod/restore-webserver-prod-m75gm` cuyo destino era `VirtualMachine/webserver-prod` y que aparecía como `COMPLETE: true`.
+- No se encontraron recursos `ScheduleVMBackup`.
+- No se encontraron recursos `VolumeRemoteBackup` ni `VolumeRemoteRestore`.
+- El BackupTarget `longhorn-system/default` informaba `AVAILABLE: true`, pero su `backupTargetURL` y `credentialSecret` estaban vacíos.
+
+La lectura correcta es limitada: se observó un snapshot listo y una restauración registrada como completa, pero no se demostró un destino NFS/S3 configurado ni una programación de backups externos. El indicador Available del destino no reemplaza la comprobación de su URL, configuración y existencia de copias.
+
+## Validación de recuperación
+
+Una prueba de recuperación completa debería registrar, como mínimo:
+
+1. Identidad y fecha del backup seleccionado.
+2. Destino real y ubicación independiente del clúster.
+3. Resultado de la restauración y eventos asociados.
+4. Estado de la VM y de sus volúmenes.
+5. Arranque del sistema operativo invitado.
+6. Comprobaciones funcionales de la aplicación y consistencia de datos.
+7. Tiempo total de recuperación y punto de recuperación alcanzado.
+
+No se midieron RPO ni RTO en este laboratorio. No se debe asignar una cifra sin resultados cronometrados y una prueba de pérdida de datos controlada.
+
+## Referencias
+
+- [SUSE Virtualization — Backup and Restore](https://documentation.suse.com/cloudnative/virtualization/latest/en/virtual-machines/backup-restore.html)
+- [Longhorn — Backup and Restore](https://longhorn.io/docs/)
