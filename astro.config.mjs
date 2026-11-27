@@ -30,7 +30,7 @@ export default defineConfig({
         {
           label: 'SUSE Virtualization',
           items: [
-            { label: 'Laboratorio práctico — índice', slug: 'suse-virtualization/index' },
+            { label: 'Laboratorio práctico — índice', slug: 'suse-virtualization' },
             { label: 'Arquitectura', slug: 'suse-virtualization/arquitectura' },
             { label: 'Almacenamiento Longhorn', slug: 'suse-virtualization/almacenamiento-longhorn' },
             { label: 'Backup y restauración', slug: 'suse-virtualization/backup-restauracion' },
