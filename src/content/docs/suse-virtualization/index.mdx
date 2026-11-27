@@ -1,19 +1,15 @@
 ---
-title: SUSE Virtualization — laboratorio práctico
-description: Arquitectura, almacenamiento, redes, ciclo de vida de máquinas virtuales y recuperación en un laboratorio Harvester 1.8.1.
+title: SUSE Virtualization — formación práctica
+description: Guía formativa sobre arquitectura, almacenamiento, redes, máquinas virtuales y operaciones en SUSE Virtualization.
 ---
 
-import { Aside } from '@astrojs/starlight/components';
+# SUSE Virtualization: formación práctica
 
-# SUSE Virtualization: laboratorio práctico
+Esta sección reúne material técnico para aprender los conceptos y las operaciones principales de SUSE Virtualization (Harvester). Se presentan los componentes de la plataforma, su relación con Kubernetes y los procedimientos habituales para administrar máquinas virtuales, almacenamiento y redes.
 
-Esta serie reúne notas técnicas originales de un laboratorio temporal de SUSE Virtualization (Harvester) y Rancher Prime realizado el 27 de noviembre de 2026. El objetivo es explicar los componentes, documentar comandos de inspección y separar los resultados observados de las conclusiones que requieren pruebas adicionales.
+Los ejemplos están orientados a un entorno de laboratorio. Algunas funciones o recursos pueden estar limitados por la configuración disponible; cuando una práctica no pueda completarse, se puede estudiar el procedimiento y sus conceptos sin interpretar esa limitación como un comportamiento general del producto.
 
-<Aside type="caution" title="Alcance de las evidencias">
-Los resultados descritos corresponden a un entorno de laboratorio efímero, no a una instalación de producción. Una condición de Kubernetes o un recurso presente en la API no demuestra por sí solo disponibilidad de la aplicación, resiliencia ante fallos ni recuperación de datos.
-</Aside>
-
-## Contenido de la serie
+## Contenido de la formación
 
 - [Arquitectura y componentes](./arquitectura)
 - [Almacenamiento con Longhorn](./almacenamiento-longhorn)
@@ -21,23 +17,11 @@ Los resultados descritos corresponden a un entorno de laboratorio efímero, no a
 - [Redes y aislamiento](./redes)
 - [Plantillas, aprovisionamiento y migración](./maquinas-virtuales)
 
-## Entorno observado
+## Cómo utilizar esta documentación
 
-| Componente | Versión o dato |
-|---|---|
-| SUSE Virtualization / Harvester | 1.8.1 |
-| Kubernetes / RKE2 | v1.35.6+rke2r1 |
-| Longhorn Engine | v1.11.2 |
-| Nodos | harvester1, harvester2, harvester3 |
-| Fecha de captura | 27/11/2026 |
+Cada tema combina explicaciones conceptuales con comandos y ejemplos prácticos. Los comandos de consulta permiten explorar los recursos y estados del clúster; las operaciones que modifican máquinas virtuales, redes o almacenamiento deben realizarse únicamente cuando el entorno y los permisos de la práctica lo permitan.
 
-El laboratorio tenía tres nodos. Los tres reportaban condición `Ready=True`; `harvester2` estaba acordonado (`SchedulingDisabled`) y no admitía nuevas cargas. No se modificó ese estado durante la captura final.
-
-## Método y límites
-
-Las evidencias se obtuvieron mediante consultas de solo lectura con `kubectl` y la API de Kubernetes/Harvester. Se omitieron credenciales, claves, hashes, kubeconfigs, support bundles y contenido de cloud-init.
-
-Los estados se documentan tal como los devolvió la API. Las hipótesis operativas se identifican como análisis y no como hechos demostrados. No se realizaron pruebas de pérdida de nodo, reconstrucción forzada de réplicas, validación de aplicación restaurada ni mediciones de RPO/RTO.
+Los resultados de los comandos pueden variar según la versión instalada, la configuración del clúster y los recursos disponibles. Antes de ejecutar una operación, comprueba siempre el contexto de Kubernetes y el alcance del recurso afectado.
 
 ## Referencias oficiales
 
