@@ -1,64 +1,64 @@
 ---
 title: Arquitectura de SUSE Virtualization
-description: Relación entre Harvester, Kubernetes, KubeVirt, Longhorn, Kube-OVN y Rancher Prime.
+description: Componentes principales y funcionamiento de Harvester, Kubernetes, KubeVirt, Longhorn y las redes virtualizadas.
 ---
 
 # Arquitectura de SUSE Virtualization
 
-SUSE Virtualization, conocido como Harvester, es una plataforma de infraestructura hiperconvergente (HCI) construida sobre Kubernetes y orientada a ejecutar máquinas virtuales sobre infraestructura bare metal. La plataforma integra virtualización, almacenamiento distribuido y redes en una misma capa de gestión.
+SUSE Virtualization, conocido como Harvester, es una plataforma de infraestructura hiperconvergente (HCI) basada en Kubernetes. Permite ejecutar y gestionar máquinas virtuales sobre servidores físicos, integrando virtualización, almacenamiento y redes en una misma plataforma.
 
 ## Componentes principales
 
-| Componente | Responsabilidad |
+| Componente | Función |
 |---|---|
-| Kubernetes / RKE2 | Orquestación de los componentes y recursos del clúster. |
-| KubeVirt | Representación y ciclo de vida de máquinas virtuales mediante recursos Kubernetes. |
-| KVM / QEMU | Ejecución de las máquinas virtuales en los nodos. |
-| Longhorn | Volúmenes persistentes y réplicas distribuidas. |
-| Multus | Conexión de pods/VMs a interfaces de red adicionales. |
-| Kube-OVN | Redes overlay, VPC y subredes para cargas virtualizadas. |
-| Rancher Prime | Gestión de flotas y clústeres, usuarios, roles y cargas Kubernetes. |
+| Kubernetes / RKE2 | Orquesta los componentes y recursos del clúster. |
+| KubeVirt | Integra las máquinas virtuales en la API y el modelo operativo de Kubernetes. |
+| KVM / QEMU | Proporciona la tecnología de virtualización utilizada para ejecutar las máquinas virtuales. |
+| Longhorn | Proporciona almacenamiento persistente distribuido y gestión de réplicas. |
+| Multus | Permite conectar pods y máquinas virtuales a interfaces de red adicionales. |
+| Kube-OVN | Proporciona redes virtualizadas, subredes y conectividad para las cargas. |
+| Rancher Prime | Facilita la gestión centralizada de clústeres, usuarios, roles y cargas Kubernetes. |
 
-La interfaz de SUSE Virtualization se utiliza para gestionar recursos de virtualización. Rancher Prime proporciona una vista de gestión más amplia sobre los clústeres y sus cargas. No conviene confundir la administración de la flota con la operación diaria de una VM.
+Estos componentes trabajan de forma integrada. Kubernetes gestiona los recursos del clúster; KubeVirt incorpora las máquinas virtuales a ese modelo; Longhorn proporciona almacenamiento persistente y los componentes de red conectan las cargas a las redes necesarias.
 
-## Inspección desde la API
+La interfaz de SUSE Virtualization se utiliza para administrar la infraestructura virtualizada. Rancher Prime amplía las capacidades de gestión a nivel de clúster y flota.
 
-Usar el kubeconfig correcto y mantener las consultas de inventario en modo lectura:
+## Inspección desde Kubernetes
 
-```bash
-kubectl --kubeconfig ./harvester-kubeconfig get nodes -o wide
-kubectl --kubeconfig ./harvester-kubeconfig get virtualmachines -A
-kubectl --kubeconfig ./harvester-kubeconfig get virtualmachineinstances -A -o wide
-kubectl --kubeconfig ./harvester-kubeconfig get storageclasses
-```
+Con el kubeconfig correspondiente al clúster, se pueden consultar los nodos, las máquinas virtuales y el almacenamiento:
 
-Para entender un objeto concreto, ampliar la inspección:
+\`\`\`bash
+kubectl get nodes -o wide
+kubectl get virtualmachines -A
+kubectl get virtualmachineinstances -A -o wide
+kubectl get storageclasses
+\`\`\`
 
-```bash
-kubectl --kubeconfig ./harvester-kubeconfig describe virtualmachine -n prod webserver-prod
-kubectl --kubeconfig ./harvester-kubeconfig get virtualmachine -n prod webserver-prod -o yaml
-```
+Para consultar un recurso concreto:
 
-Los manifiestos completos pueden contener datos sensibles. Antes de compartirlos, revisar especialmente anotaciones, variables, cloud-init, referencias a secretos, claves y datos de usuario.
+\`\`\`bash
+kubectl describe virtualmachine <vm> -n <namespace>
+kubectl get virtualmachine <vm> -n <namespace> -o yaml
+\`\`\`
 
-## Evidencia del laboratorio
+Sustituye \`<vm>\` y \`<namespace>\` por el nombre y el espacio de nombres correspondientes.
 
-En la captura final del 27/11/2026 se observaron dos máquinas virtuales en el namespace `prod`:
+Los manifiestos completos pueden contener información sensible, como anotaciones, variables, configuración cloud-init o referencias a secretos. Revisa y oculta esos datos antes de compartir una salida.
 
-| VM | Estado VM | Estado VMI | IP | Nodo |
-|---|---|---|---|---|
-| `core-services` | Running | Running | 192.168.122.53 | harvester3 |
-| `webserver-prod` | Running | Running | 192.168.122.147 | harvester1 |
+## Estado de los nodos y planificación
 
-La condición `Ready=True` informa del estado del recurso gestionado por la plataforma. No sustituye a una comprobación de salud dentro del sistema operativo invitado ni a una prueba funcional de la aplicación.
+Kubernetes utiliza el estado de los nodos para determinar dónde puede ejecutar nuevas cargas. Un nodo en estado \`Ready\` está disponible desde el punto de vista de las condiciones básicas del clúster, pero puede estar acordonado (\`SchedulingDisabled\`).
 
-## Nodos y capacidad de planificación
+Cuando un nodo está acordonado, el scheduler normalmente no programa nuevos pods en él. Los pods que ya se ejecutan pueden continuar funcionando. Esta situación reduce las ubicaciones disponibles para nuevas cargas y puede afectar a la distribución de las réplicas de almacenamiento.
 
-Los tres nodos reportaron `Ready=True` en la captura del 27/11/2026. Sin embargo, `harvester2` aparecía como `Ready,SchedulingDisabled`, con `spec.unschedulable=true` y el taint `node.kubernetes.io/unschedulable:NoSchedule`.
+Para comprobar el estado y la posibilidad de programación:
 
-El nodo no presentaba presión de memoria, disco ni PID (`MemoryPressure=False`, `DiskPressure=False` y `PIDPressure=False`).
+\`\`\`bash
+kubectl get nodes
+kubectl describe node <node>
+\`\`\`
 
-Un nodo puede estar Ready y, simultáneamente, estar acordonado. En ese estado, el scheduler no programa normalmente nuevos pods en él, aunque los pods existentes pueden continuar ejecutándose. Esto reduce las opciones de colocación para nuevas cargas y puede limitar la capacidad disponible para las réplicas de almacenamiento.
+Conviene distinguir entre el estado general del nodo, sus condiciones de recursos y su disponibilidad para recibir nuevas cargas.
 
 ## Referencias
 
