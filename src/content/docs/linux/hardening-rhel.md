@@ -1067,7 +1067,6 @@ Un sistema correctamente bastionado no se limita a mantener SELinux habilitado: 
 La regla fundamental es corregir la causa de una denegación, no eliminar la protección que la provoca.
 
 En producción, SELinux debe permanecer en modo `Enforcing`. Cualquier modificación de su política debe responder a una necesidad técnica justificada y seguir el principio de mínimo privilegio.
----
 
 ## 3. Firewall con firewalld
 
