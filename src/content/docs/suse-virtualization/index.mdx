@@ -3,28 +3,77 @@ title: SUSE Virtualization — formación práctica
 description: Guía formativa sobre arquitectura, almacenamiento, redes, máquinas virtuales y operaciones en SUSE Virtualization.
 ---
 
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
 ![SUSE Virtualization — Formación práctica](/suse-virtualization-banner.png)
 
-Esta sección reúne material técnico para aprender los conceptos y las operaciones principales de SUSE Virtualization (Harvester). Se presentan los componentes de la plataforma, su relación con Kubernetes y los procedimientos habituales para administrar máquinas virtuales, almacenamiento y redes.
+Aprende a trabajar con **SUSE Virtualization (Harvester)** a través de una colección de guías prácticas. Explora su arquitectura, administra almacenamiento y redes, y descubre cómo desplegar y mantener máquinas virtuales.
 
-Los ejemplos están orientados a un entorno de laboratorio. Algunas funciones o recursos pueden estar limitados por la configuración disponible; cuando una práctica no pueda completarse, se puede estudiar el procedimiento y sus conceptos sin interpretar esa limitación como un comportamiento general del producto.
+## Explora la formación
 
-## Contenido de la formación
+### Fundamentos
 
-- [Arquitectura y componentes](./arquitectura)
-- [Almacenamiento con Longhorn](./almacenamiento-longhorn)
-- [Backup y restauración de máquinas virtuales](./backup-restauracion)
-- [Redes y aislamiento](./redes)
-- [Plantillas, aprovisionamiento y migración](./maquinas-virtuales)
-- [Alta disponibilidad y mantenimiento de nodos](./alta-disponibilidad)
-- [Despliegues escalables con plantillas](./despliegues-escalables)
-- [SUSE Application Collection](./suse-application-collection)
+<CardGrid>
+  <Card title="Arquitectura y componentes" icon="architecture" href="./arquitectura">
+    Conoce los componentes de la plataforma y su relación con Kubernetes.
+  </Card>
+</CardGrid>
+
+### Almacenamiento y protección
+
+<CardGrid>
+  <Card title="Almacenamiento con Longhorn" icon="database" href="./almacenamiento-longhorn">
+    Volúmenes persistentes, réplicas, snapshots y almacenamiento distribuido.
+  </Card>
+  <Card title="Backup y restauración" icon="shield-check" href="./backup-restauracion">
+    Protege máquinas virtuales y aprende los conceptos de copia y recuperación.
+  </Card>
+</CardGrid>
+
+### Redes
+
+<CardGrid>
+  <Card title="Redes y aislamiento" icon="network" href="./redes">
+    Redes virtuales, Multus, Kube-OVN y aislamiento del tráfico.
+  </Card>
+</CardGrid>
+
+### Máquinas virtuales
+
+<CardGrid>
+  <Card title="Plantillas, aprovisionamiento y migración" icon="monitor" href="./maquinas-virtuales">
+    Crea máquinas virtuales, trabaja con plantillas y comprende la migración en vivo.
+  </Card>
+  <Card title="Despliegues escalables" icon="layers" href="./despliegues-escalables">
+    Organiza despliegues de múltiples máquinas virtuales mediante plantillas y configuración reutilizable.
+  </Card>
+</CardGrid>
+
+### Operación y disponibilidad
+
+<CardGrid>
+  <Card title="Alta disponibilidad y mantenimiento" icon="activity" href="./alta-disponibilidad">
+    Comprende la disponibilidad de las cargas y las tareas de mantenimiento de nodos.
+  </Card>
+</CardGrid>
+
+### Ecosistema
+
+<CardGrid>
+  <Card title="SUSE Application Collection" icon="package" href="./suse-application-collection">
+    Explora imágenes de contenedor, gráficos Helm y seguridad de la cadena de suministro.
+  </Card>
+</CardGrid>
 
 ## Cómo utilizar esta documentación
 
-Cada tema combina explicaciones conceptuales con comandos y ejemplos prácticos. Los comandos de consulta permiten explorar los recursos y estados del clúster; las operaciones que modifican máquinas virtuales, redes o almacenamiento deben realizarse únicamente cuando el entorno y los permisos de la práctica lo permitan.
+Cada guía combina explicaciones conceptuales con comandos y ejemplos prácticos. Los comandos de consulta permiten explorar recursos y estados del clúster; antes de ejecutar operaciones que modifiquen máquinas virtuales, redes o almacenamiento, comprueba el contexto de Kubernetes y el alcance del recurso afectado.
 
-Los resultados de los comandos pueden variar según la versión instalada, la configuración del clúster y los recursos disponibles. Antes de ejecutar una operación, comprueba siempre el contexto de Kubernetes y el alcance del recurso afectado.
+<details>
+  <summary>Consideraciones sobre los ejemplos de laboratorio</summary>
+
+  Los ejemplos están orientados a un entorno de laboratorio. Las funciones y los recursos disponibles pueden depender de la configuración y de la versión instalada. Si una práctica no puede completarse en un entorno concreto, estudia el procedimiento y sus conceptos sin interpretar esa limitación como un comportamiento general del producto.
+</details>
 
 ## Referencias oficiales
 
