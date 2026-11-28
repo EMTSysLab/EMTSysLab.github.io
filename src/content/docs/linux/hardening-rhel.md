@@ -1070,23 +1070,556 @@ En producción, SELinux debe permanecer en modo `Enforcing`. Cualquier modificac
 
 ## 3. Firewall con firewalld
 
+El firewall constituye una capa esencial de protección de un sistema Red Hat Enterprise Linux. Su objetivo es controlar qué tráfico de red puede alcanzar el sistema, qué servicios se exponen y qué comunicaciones se permiten entre redes o zonas de seguridad.
+
+En RHEL 10, `firewalld` proporciona una interfaz dinámica para administrar las reglas del firewall. Organiza la configuración mediante zonas, servicios, puertos, reglas enriquecidas y políticas. Utiliza el framework de filtrado de paquetes disponible en el sistema, por lo que la administración habitual debe realizarse mediante `firewall-cmd` o las herramientas compatibles de `firewalld`, evitando modificar de forma independiente las reglas que este servicio gestiona.
+
+> **Principio de bastionado:** deniega por defecto el tráfico que no sea necesario y permite únicamente las comunicaciones justificadas por los requisitos del servicio. Antes de modificar un firewall remoto, identifica la interfaz, la zona y el origen desde el que administras el sistema. Mantén una vía de recuperación para evitar perder el acceso.
+
+### 3.1. Arquitectura y conceptos fundamentales
+
+Los principales elementos de `firewalld` son:
+
+- **Zonas (*zones*):** agrupan reglas según el nivel de confianza asignado a una interfaz o dirección de origen. Cada conexión o interfaz se asocia a una zona.
+- **Servicios (*services*):** definiciones reutilizables que agrupan los puertos, protocolos y, cuando corresponda, módulos auxiliares necesarios para una aplicación.
+- **Puertos:** permiten autorizar un puerto TCP, UDP u otro protocolo compatible cuando no existe un servicio predefinido adecuado.
+- **Reglas enriquecidas (*rich rules*):** permiten expresar condiciones más precisas, por ejemplo, permitir un servicio únicamente desde una dirección o red de origen.
+- **Políticas (*policy objects*):** controlan el tráfico entre zonas y el tráfico que entra o sale del propio host. Son especialmente útiles para escenarios de enrutamiento, virtualización y contenedores.
+- **NAT (*Network Address Translation*):** permite modificar direcciones o puertos de origen o destino mediante mecanismos como masquerading, DNAT y redirección.
+
+`firewalld` administra el filtrado de forma dinámica. La utilidad principal de administración es `firewall-cmd`; la herramienta gráfica `firewall-config` puede utilizarse cuando está instalada.
+
+### 3.2. Zonas y niveles de confianza
+
+Las zonas representan distintos niveles de confianza. Entre las zonas predefinidas se encuentran:
+
+| Zona | Uso habitual |
+|---|---|
+| `drop` | Descarta el tráfico entrante sin responder. |
+| `block` | Rechaza el tráfico entrante. |
+| `public` | Redes públicas o no confiables; solo se habilitan las conexiones necesarias. |
+| `external` | Redes externas, normalmente en escenarios con NAT o encaminamiento. |
+| `dmz` | Sistemas publicados en una zona desmilitarizada. |
+| `work` | Redes de trabajo cuyos equipos reciben un nivel de confianza limitado. |
+| `home` | Redes domésticas. |
+| `internal` | Redes internas con un nivel de confianza mayor que una red pública. |
+| `trusted` | Confía en todo el tráfico; debe reservarse para escenarios muy controlados. |
+
+La zona predeterminada suele ser `public` en una instalación estándar, pero debe comprobarse en cada sistema. No se debe elegir una zona únicamente por su nombre: hay que revisar su objetivo, su configuración y las reglas que contiene.
+
+Consultar las zonas disponibles y la zona predeterminada:
+
 ```bash
-# Verificar estado
-systemctl status firewalld
-firewall-cmd --state
+firewall-cmd --get-zones
+firewall-cmd --get-default-zone
+```
 
-# Ver zona activa y reglas
+Consultar las zonas activas y las interfaces asociadas:
+
+```bash
 firewall-cmd --get-active-zones
-firewall-cmd --list-all
+```
 
-# Ejemplo: servidor web con SSH restringido
-firewall-cmd --permanent --remove-service=ssh
-firewall-cmd --permanent --add-rich-rule='rule family="ipv4" source address="10.0.0.0/8" service name="ssh" accept'
-firewall-cmd --permanent --add-service=https
+Consultar la configuración de todas las zonas:
+
+```bash
+firewall-cmd --list-all-zones
+```
+
+Una conexión solo pertenece a una zona a la vez. El tráfico que entra por una interfaz se evalúa según la zona a la que está asociada; por eso, modificar la zona predeterminada no implica necesariamente modificar la zona que recibe el tráfico de una interfaz ya asignada.
+
+### 3.3. Estado del servicio y diagnóstico inicial
+
+Antes de realizar cambios, comprueba que el servicio está instalado y operativo:
+
+```bash
+# Estado detallado del servicio
+systemctl status firewalld
+
+# Estado resumido
+systemctl is-active firewalld
+
+# Estado consultado mediante firewall-cmd
+firewall-cmd --state
+```
+
+Si `firewalld` está instalado y la política del sistema requiere que se inicie automáticamente:
+
+```bash
+systemctl enable --now firewalld
+```
+
+No actives ni desactives el servicio de forma aislada en un servidor remoto sin conocer previamente cómo se gestiona el filtrado en ese entorno. La activación o parada del firewall puede cambiar la exposición de los servicios.
+
+Identifica las interfaces, direcciones y rutas antes de seleccionar una zona:
+
+```bash
+ip -br address
+ip route
+nmcli connection show --active
+```
+
+Consulta las reglas de la zona predeterminada:
+
+```bash
+firewall-cmd --list-all
+```
+
+Para consultar una zona concreta, indica su nombre explícitamente:
+
+```bash
+firewall-cmd --zone=public --list-all
+```
+
+La opción sin `--zone` utiliza la zona predeterminada. En sistemas con varias interfaces o zonas, especificar la zona evita inspeccionar o modificar una configuración distinta de la que recibe el tráfico.
+
+### 3.4. Asociación de interfaces y redes de origen a zonas
+
+Las zonas se pueden asociar a interfaces de red o a direcciones y redes de origen. Esta asociación determina qué conjunto de reglas se aplica al tráfico.
+
+Consultar la zona asociada a una interfaz:
+
+```bash
+firewall-cmd --get-zone-of-interface=ens192
+```
+
+El nombre `ens192` es ilustrativo; utiliza el nombre real de la interfaz obtenido con `ip -br address` o `nmcli`.
+
+Para asignar temporalmente una interfaz a una zona:
+
+```bash
+firewall-cmd --zone=internal --change-interface=ens192
+```
+
+Para guardar la asociación en la configuración permanente:
+
+```bash
+firewall-cmd --permanent --zone=internal --change-interface=ens192
+```
+
+La gestión de las conexiones de red suele estar integrada con NetworkManager. En esos sistemas, la zona también puede definirse en el perfil de conexión. Comprueba la configuración efectiva después de cualquier cambio y evita mantener asignaciones contradictorias entre NetworkManager y `firewalld`.
+
+También es posible asociar una red de origen a una zona. Por ejemplo, para asignar una red de laboratorio a la zona `internal`:
+
+```bash
+firewall-cmd --permanent --zone=internal --add-source=192.0.2.0/24
+```
+
+La red `192.0.2.0/24` pertenece a un rango reservado para documentación y debe sustituirse por una red real y autorizada en el entorno donde se aplique. Una asociación por origen puede afectar a todo el tráfico procedente de esa red; debe diseñarse teniendo en cuenta las interfaces, las zonas y las reglas ya existentes.
+
+Después de modificar asociaciones permanentes, aplica los cambios siguiendo el procedimiento de validación y recarga descrito más adelante.
+
+### 3.5. Configuración runtime y permanente
+
+`firewalld` mantiene dos conjuntos de configuración:
+
+- **Runtime:** reglas que están activas en ese momento. Los cambios realizados sin `--permanent` se pierden al recargar o reiniciar el servicio.
+- **Permanent:** configuración persistente que se conserva entre reinicios. Los cambios realizados con `--permanent` no se aplican a runtime hasta que se recarga el servicio o se utiliza otro procedimiento de activación.
+
+Esta separación permite probar una regla antes de hacerla persistente.
+
+Ejemplo: permitir temporalmente HTTPS en la zona `public`:
+
+```bash
+firewall-cmd --zone=public --add-service=https
+```
+
+Comprobar el resultado:
+
+```bash
+firewall-cmd --zone=public --query-service=https
+```
+
+La respuesta `yes` indica que el servicio está permitido en runtime para esa zona.
+
+Una vez validado el cambio, añadirlo a la configuración permanente:
+
+```bash
+firewall-cmd --permanent --zone=public --add-service=https
+```
+
+Comprobar la configuración permanente:
+
+```bash
+firewall-cmd --permanent --zone=public --query-service=https
+```
+
+Como alternativa, si se han probado y validado varios cambios runtime, se puede guardar la configuración runtime actual como permanente:
+
+```bash
+firewall-cmd --runtime-to-permanent
+```
+
+Esta operación copia el conjunto de reglas runtime a la configuración permanente. Debe utilizarse únicamente después de revisar todos los cambios activos, ya que también puede persistir modificaciones temporales que no se pretendía conservar.
+
+Para retirar un servicio de runtime:
+
+```bash
+firewall-cmd --zone=public --remove-service=https
+```
+
+Para retirarlo de la configuración permanente:
+
+```bash
+firewall-cmd --permanent --zone=public --remove-service=https
+```
+
+Antes de aplicar cambios permanentes, valida la configuración:
+
+```bash
+firewall-cmd --check-config
+```
+
+Cuando la configuración permanente esté revisada, una recarga aplica sus cambios a runtime:
+
+```bash
 firewall-cmd --reload
 ```
 
----
+Una recarga sustituye la configuración runtime por la permanente. Por ello, cualquier regla runtime que no se haya guardado puede desaparecer. No debe utilizarse `--reload` como paso automático sin comprobar antes qué cambios se perderían.
+
+### 3.6. Gestión de servicios
+
+Los servicios predefinidos simplifican la administración porque agrupan los puertos y protocolos asociados a una aplicación.
+
+Consultar los servicios disponibles:
+
+```bash
+firewall-cmd --get-services
+```
+
+Consultar la definición de un servicio concreto:
+
+```bash
+firewall-cmd --info-service=ssh
+```
+
+Permitir HTTPS temporalmente en la zona `public`:
+
+```bash
+firewall-cmd --zone=public --add-service=https
+```
+
+Tras comprobar que el servicio debe permanecer accesible, añadirlo a la configuración permanente:
+
+```bash
+firewall-cmd --permanent --zone=public --add-service=https
+```
+
+Comprobar qué servicios están permitidos:
+
+```bash
+firewall-cmd --zone=public --list-services
+firewall-cmd --permanent --zone=public --list-services
+```
+
+No debe confundirse permitir un servicio en el firewall con instalarlo, iniciarlo o configurarlo. La regla únicamente permite el tráfico correspondiente; la aplicación debe estar instalada, escuchando en la dirección y puerto esperados y protegida por sus propios controles.
+
+### 3.7. Gestión de puertos TCP y UDP
+
+Cuando no existe un servicio predefinido adecuado, se puede permitir directamente un puerto y protocolo.
+
+Ejemplo: permitir temporalmente el puerto TCP 8443 en la zona `public`:
+
+```bash
+firewall-cmd --zone=public --add-port=8443/tcp
+```
+
+Comprobar si está permitido:
+
+```bash
+firewall-cmd --zone=public --query-port=8443/tcp
+```
+
+Tras validarlo, hacerlo permanente:
+
+```bash
+firewall-cmd --permanent --zone=public --add-port=8443/tcp
+```
+
+Para retirar la autorización:
+
+```bash
+firewall-cmd --zone=public --remove-port=8443/tcp
+```
+
+TCP y UDP son protocolos diferentes. Autorizar `8443/tcp` no permite automáticamente `8443/udp`. Abre exclusivamente el protocolo que utilice la aplicación y evita habilitar rangos amplios de puertos sin una justificación documentada.
+
+### 3.8. Reglas enriquecidas (*rich rules*)
+
+Las reglas enriquecidas permiten definir condiciones adicionales, como la familia IP, la dirección de origen, el servicio, el puerto, el registro de eventos y la acción aplicada al tráfico.
+
+Su estructura permite expresar reglas más precisas que una autorización general de servicio.
+
+#### Restringir SSH a una red de administración
+
+Supongamos que un servidor debe aceptar conexiones SSH únicamente desde una red de administración. El siguiente ejemplo utiliza `192.0.2.0/24`, rango reservado para documentación. Sustitúyelo por la red real autorizada.
+
+Primero, identifica la zona que recibe el tráfico de administración y comprueba las reglas existentes:
+
+```bash
+firewall-cmd --get-active-zones
+firewall-cmd --zone=public --list-all
+```
+
+En una ventana de mantenimiento y manteniendo abierta la sesión administrativa actual, añade primero la regla específica en runtime:
+
+```bash
+firewall-cmd --zone=public --add-rich-rule='rule family="ipv4" source address="192.0.2.0/24" service name="ssh" accept'
+```
+
+Desde un segundo terminal, comprueba que puedes abrir una nueva conexión SSH desde un equipo perteneciente a la red autorizada. Verifica también, desde un origen de prueba controlado, que el acceso no autorizado queda bloqueado.
+
+Solo después de validar el resultado, retira la autorización general de SSH de esa zona, si existe y si no es necesaria para otros orígenes:
+
+```bash
+firewall-cmd --zone=public --remove-service=ssh
+```
+
+Comprueba las reglas runtime:
+
+```bash
+firewall-cmd --zone=public --list-all
+firewall-cmd --zone=public --list-rich-rules
+```
+
+Una vez validado el comportamiento, replica los cambios en la configuración permanente:
+
+```bash
+firewall-cmd --permanent --zone=public --add-rich-rule='rule family="ipv4" source address="192.0.2.0/24" service name="ssh" accept'
+
+firewall-cmd --permanent --zone=public --remove-service=ssh
+```
+
+Valida la configuración antes de recargar:
+
+```bash
+firewall-cmd --check-config
+```
+
+La regla de ejemplo presupone que SSH utiliza el servicio predefinido `ssh` y que la zona seleccionada es realmente la que recibe las conexiones. Si el servicio escucha en otro puerto, habrá que adaptar la regla. También deben revisarse otras zonas, políticas, reglas enriquecidas y mecanismos de acceso que pudieran permitir SSH por otra vía.
+
+**Precaución operativa:** no cierres la sesión administrativa original hasta comprobar una segunda conexión. En servidores remotos, dispone de consola de hipervisor, acceso fuera de banda o un procedimiento de recuperación antes de modificar reglas de administración.
+
+### 3.9. Políticas de firewall (*policy objects*)
+
+Las políticas permiten controlar el tráfico entre zonas y el tráfico relacionado con el propio host. A diferencia de las reglas asociadas a una única zona, una política define una zona de entrada (*ingress*) y otra de salida (*egress*).
+
+Entre los elementos relevantes se encuentran:
+
+- `HOST`: representa el propio sistema donde se ejecuta `firewalld`.
+- `ANY`: representa cualquier zona.
+- **Ingress zone:** zona desde la que se origina el tráfico.
+- **Egress zone:** zona hacia la que se dirige el tráfico.
+- **Target:** acción predeterminada de la política cuando no se aplica una regla más específica.
+
+Las políticas son útiles en equipos que actúan como routers, gateways o hosts de virtualización, donde es necesario controlar el tráfico que atraviesa el sistema y no solamente el que termina en él.
+
+Consultar las políticas disponibles:
+
+```bash
+firewall-cmd --get-policies
+```
+
+Consultar la información de una política concreta:
+
+```bash
+firewall-cmd --info-policy nombre-politica
+```
+
+Consultar las políticas activas:
+
+```bash
+firewall-cmd --list-all-policies
+```
+
+La creación de políticas debe partir de un diseño de red explícito. Es necesario definir qué zonas participan, qué sentido tiene el tráfico, qué servicios se autorizan y cuál será la acción predeterminada. No se deben crear políticas genéricas con destino `ACCEPT` para resolver problemas de conectividad.
+
+### 3.10. NAT, masquerading y redirección de puertos
+
+`firewalld` permite gestionar diferentes modalidades de traducción de direcciones de red (*NAT*).
+
+- **Masquerading:** sustituye la dirección IP de origen por la dirección de la interfaz de salida. Es habitual en gateways que proporcionan conectividad a Internet a redes privadas.
+- **DNAT:** modifica la dirección o el puerto de destino de los paquetes entrantes para dirigirlos a otro equipo o servicio.
+- **Redirect:** redirige el tráfico recibido en un puerto hacia otro puerto del propio sistema.
+
+#### Habilitar masquerading
+
+En un gateway cuya interfaz externa pertenece a la zona `external`, primero comprueba el estado:
+
+```bash
+firewall-cmd --zone=external --query-masquerade
+```
+
+Si el diseño de red requiere NAT de origen, se puede habilitar en runtime:
+
+```bash
+firewall-cmd --zone=external --add-masquerade
+```
+
+Después de validar la conectividad y las rutas, guardar la configuración:
+
+```bash
+firewall-cmd --permanent --zone=external --add-masquerade
+```
+
+Masquerading no sustituye la configuración de encaminamiento. El reenvío IP del kernel, las rutas, las reglas entre zonas y la conectividad de retorno deben estar correctamente configurados.
+
+#### Redirigir tráfico a un servidor interno mediante DNAT
+
+Ejemplo ilustrativo: redirigir las conexiones TCP recibidas en el puerto 80 de la zona `public` a un servidor interno de documentación, en la dirección reservada `192.0.2.10`, puerto 8080:
+
+```bash
+firewall-cmd --permanent --zone=public --add-forward-port=port=80:proto=tcp:toaddr=192.0.2.10:toport=8080
+```
+
+Aplicar la configuración después de validarla:
+
+```bash
+firewall-cmd --check-config
+firewall-cmd --reload
+```
+
+Comprobar la regla:
+
+```bash
+firewall-cmd --zone=public --list-forward-ports
+```
+
+Este ejemplo requiere una arquitectura de red que permita el reenvío, encaminamiento y tráfico de retorno. La dirección de destino debe sustituirse por la del servidor real. No publiques servicios internos sin revisar su autenticación, cifrado, exposición y controles de acceso.
+
+### 3.11. Integración con Podman y virtualización
+
+En hosts que ejecutan contenedores o máquinas virtuales, el firewall debe contemplar tanto el tráfico dirigido al host como el tráfico que atraviesa el host hacia las cargas de trabajo.
+
+Podman puede crear redes y reglas de filtrado para gestionar la conectividad de los contenedores. En RHEL 10, las políticas de `firewalld` permiten controlar comunicaciones entre zonas, incluidas las asociadas a redes de contenedores.
+
+Antes de modificar el firewall de un host con Podman o virtualización:
+
+1. Identifica las interfaces físicas, virtuales y de contenedores.
+2. Consulta las zonas activas y las políticas existentes.
+3. Comprueba qué componente administra las reglas de red.
+4. Evita duplicar o sobrescribir reglas que haya generado el gestor de contenedores o de virtualización.
+5. Valida la conectividad entre host, redes de contenedores, máquinas virtuales y redes externas.
+
+Comandos de inspección útiles:
+
+```bash
+firewall-cmd --get-active-zones
+firewall-cmd --list-all-zones
+firewall-cmd --list-all-policies
+podman network ls
+podman network inspect nombre-red
+```
+
+No se debe asumir que abrir un puerto en el host equivale a publicar correctamente un servicio de un contenedor. La publicación de puertos, el direccionamiento, el aislamiento de red y las reglas de firewall deben revisarse conjuntamente.
+
+### 3.12. Verificación, auditoría y resolución de problemas
+
+Una regla no debe considerarse correcta únicamente porque el comando haya terminado sin errores. Es necesario comprobar la configuración efectiva y realizar pruebas de conectividad desde los orígenes autorizados y no autorizados.
+
+Resumen de comprobaciones:
+
+```bash
+# Estado del servicio
+firewall-cmd --state
+
+# Zonas activas
+firewall-cmd --get-active-zones
+
+# Configuración runtime de una zona
+firewall-cmd --zone=public --list-all
+
+# Configuración permanente de una zona
+firewall-cmd --permanent --zone=public --list-all
+
+# Reglas enriquecidas
+firewall-cmd --zone=public --list-rich-rules
+
+# Políticas
+firewall-cmd --list-all-policies
+
+# Validación de la configuración permanente
+firewall-cmd --check-config
+```
+
+Para comprobar si una aplicación está escuchando en el puerto esperado:
+
+```bash
+ss -lntup
+```
+
+Para consultar los registros del servicio:
+
+```bash
+journalctl -u firewalld
+```
+
+Para revisar los mensajes recientes del kernel relacionados con la red:
+
+```bash
+journalctl -k
+```
+
+En un diagnóstico avanzado, `nft list ruleset` permite inspeccionar el ruleset del kernel cuando el backend utilizado es nftables:
+
+```bash
+nft list ruleset
+```
+
+Este comando es de consulta. No se recomienda modificar directamente ese ruleset cuando está administrado por `firewalld`, porque los cambios pueden entrar en conflicto con la configuración del servicio o desaparecer en una recarga.
+
+Si una conexión no funciona, comprueba de forma ordenada:
+
+1. Que el servicio está iniciado y escucha en la dirección y puerto esperados.
+2. Que la ruta y la conectividad IP son correctas.
+3. Que la interfaz o dirección de origen está asociada a la zona prevista.
+4. Que la zona o política permite el tráfico requerido.
+5. Que no existen reglas adicionales que bloqueen o alteren la comunicación.
+6. Que el sistema remoto y los dispositivos intermedios permiten el tráfico de retorno.
+
+### 3.13. Buenas prácticas de bastionado en producción
+
+- Mantener `firewalld` activo cuando sea el mecanismo de filtrado definido para el sistema.
+- Aplicar el principio de mínimo privilegio y exponer únicamente los servicios necesarios.
+- Asignar zonas según el nivel de confianza real de cada red.
+- Restringir SSH y otros servicios administrativos a redes de gestión autorizadas.
+- Evitar rangos de origen excesivamente amplios.
+- Preferir servicios predefinidos frente a aperturas manuales de puertos cuando resulte apropiado.
+- Probar los cambios en runtime antes de persistirlos.
+- Validar la configuración permanente con `firewall-cmd --check-config` antes de recargar.
+- Mantener una sesión administrativa y un procedimiento de recuperación durante cambios remotos.
+- Revisar periódicamente las reglas, servicios y políticas que ya no sean necesarios.
+- Documentar el propósito, el responsable y el alcance de las reglas especiales.
+- Evitar administrar simultáneamente las mismas reglas mediante `firewalld` y herramientas independientes de bajo nivel.
+- En hosts con contenedores o máquinas virtuales, coordinar las reglas con el gestor de red correspondiente.
+
+#### Checklist de seguridad
+
+- [ ] El servicio `firewalld` está activo y habilitado según la política del sistema.
+- [ ] Las zonas activas y sus interfaces están identificadas.
+- [ ] La zona predeterminada y las asociaciones por origen están revisadas.
+- [ ] Solo están permitidos los servicios y puertos necesarios.
+- [ ] Los accesos administrativos están restringidos a redes autorizadas.
+- [ ] Las reglas enriquecidas y políticas tienen una justificación documentada.
+- [ ] NAT y reenvío están habilitados únicamente cuando la arquitectura lo requiere.
+- [ ] La configuración permanente ha sido validada.
+- [ ] Se han probado las conexiones permitidas y las que deben quedar bloqueadas.
+- [ ] Existe un procedimiento de recuperación ante una modificación incorrecta.
+
+### Conclusión
+
+El firewall es una capa esencial del bastionado de RHEL 10. Una configuración segura no consiste en abrir o cerrar puertos de forma indiscriminada, sino en controlar qué tráfico puede alcanzar cada servicio, desde qué orígenes y a través de qué interfaces o zonas.
+
+En producción, las reglas deben responder a las necesidades reales de la infraestructura, mantenerse bajo el principio de mínimo privilegio y someterse a verificaciones periódicas. Los cambios deben probarse antes de hacerse permanentes, especialmente cuando afectan a los canales de administración remota.
+
+La administración coherente de `firewalld`, junto con SELinux, el control de servicios y la auditoría del sistema, contribuye a reducir la superficie de ataque y limitar las comunicaciones no autorizadas.
+
+### Referencias oficiales
+
+- [RHEL 10 — Configuración de firewalls y filtros de paquetes](https://docs.redhat.com/es/documentation/red_hat_enterprise_linux/10/html-single/configuring_firewalls_and_packet_filters/index): documentación general de zonas, reglas, políticas, NAT y filtrado.
+- [RHEL 10 — Uso y configuración de firewalld](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html/configuring_firewalls_and_packet_filters/using-and-configuring-firewalld): capítulo específico sobre administración de zonas, servicios, reglas enriquecidas, políticas y reenvío.
+- [RHEL 10 — Configuración de nftables](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html/configuring_firewalls_and_packet_filters/configuring-nftables): referencia para comprender la administración del filtrado mediante nftables.
 
 ## 4. SSH hardening
 
